@@ -1,0 +1,21 @@
+/**
+ * AquaHotkey - InputHook.ahk
+ * 
+ * Author: 0w0Demonic
+ * 
+ * https://www.github.com/0w0Demonic/AquaHotkey
+ * - src/Classes/InputHook.ahk
+ */
+class InputHook {
+    /**
+     * Returns the key name associated with virtual key code `VK` and
+     * scan code `SC`.
+     * 
+     * @param   {Integer}  VK  virtual key code
+     * @param   {Integer}  SC  scan code
+     * @return  {String}
+     */
+    static GetKeyName(VK, SC) {
+        return GetKeyName(Format("vk{:x}sc{:x}", VK, SC))
+    }
+}
