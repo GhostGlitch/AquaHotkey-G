@@ -208,10 +208,10 @@ class Array {
                 Out := unset
                 return
             }
-            VariantType := NumGet(Ptr, "Int")
-            switch (VariantType) {
-                case 0, 1: Out := unset
-                case 2, 3: Out := NumGet(Ptr + A_PtrSize, "Int64")
+
+            switch (NumGet(Ptr, "Int")) {
+                case 0, 1, 10: Out := unset
+                case 2, 3, 20: Out := NumGet(Ptr + A_PtrSize, "Int64")
                 case 4, 5: Out := NumGet(Ptr + A_PtrSize, "Double")
                 case 8: Out := StrGet(NumGet(Ptr + A_PtrSize, "Ptr"))
                 case 9: Out := ObjFromPtrAddRef(NumGet(Ptr + A_PtrSize, "Ptr"))

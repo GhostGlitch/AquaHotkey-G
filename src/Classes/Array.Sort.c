@@ -64,7 +64,6 @@ int Partition(
 {
     VARIANT pivot, temp, v1;
     VariantInit(&pivot);
-    VariantInit(&temp);
     VariantInit(&v1);
 
     InvokeGet(pDisp, lpVtbl, dispidGet, high, &pivot);
