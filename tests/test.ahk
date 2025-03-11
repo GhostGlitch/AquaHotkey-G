@@ -43,3 +43,10 @@ class Reflection extends AquaHotkey {
         }
     }
 }
+
+Arr := [1, 2, 4, 3, 5]
+
+Arr.Sort()
+
+MsgBox(Type(Arr))
+Arr.ForEach(MsgBox)

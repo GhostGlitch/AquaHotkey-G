@@ -21,7 +21,7 @@ class Func {
      *   leaving the first parameter untouched.
      * 
      *   ```
-     *   ContainsLetterF := InStr.__("F") ; InStr.Bind(unset, "H")
+     *   ContainsLetterF := InStr.__("F") ; InStr.Bind(unset, "F")
      *   ContainsLetterF("Foo")           ; InStr("Foo", "F")
      * 
      *   class MyClass {
