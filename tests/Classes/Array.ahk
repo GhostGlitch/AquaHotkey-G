@@ -66,8 +66,20 @@ class Array {
         Array("1", unset, "2", "3").Swap(2, 4).Join().AssertEquals("132")
     }
 
-    static Swap() {
+    static Swap3() {
         Array("1", unset, unset, "4").Swap(2, 3).Join().AssertEquals("14")
+    }
+
+    static Swap4() {
+        Array(unset, unset).Swap(1, 2).Map((str?) => (str ?? "unset"))
+                .Join(", ").AssertEquals("unset, unset")
+    }
+    
+    static Swap5() {
+        static Test() {
+            Array(1, 2, 3, 4).Swap(3, 87)
+        }
+        TestSuite.AssertThrows(Test)
     }
 
     static Reverse1() {
@@ -130,6 +142,21 @@ class Array {
             return (a > b) - (b > a)
         }
         Array(unset, 1, 2, 3, unset).Sort(Comparator).Join().AssertEquals("123")
+    }
+
+    static Sort8() {
+        Array().Sort()
+    }
+
+    static Sort9() {
+        static CompBuffers(A, B) {
+            ASize := A.Size
+            BSize := B.Size
+            return (ASize > BSize) - (ASize > BSize)
+        }
+        vbuf := Buffer(24, 0)
+        vref := ComValue(0x400C, vbuf.Ptr)
+        Array(vbuf, vbuf).Sort(CompBuffers)
     }
 
     static SortAlphabetically() {
