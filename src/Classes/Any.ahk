@@ -317,7 +317,7 @@ class Any {
         if (this = Other) {
             return this
         }
-        throw ValueError(Msg ?? "value is not equal to " . ToString(Other),,
+        throw ValueError(Msg ?? "value is not equal to " . ToString(&Other),,
                          ToString(&this))
 
 
