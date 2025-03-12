@@ -202,58 +202,6 @@ class Array {
      * @return  {this}
      */
     Sort(Comp?, Reversed := false) {
-
-        static GetValue(Ptr, &Out) {
-            if (!IsSet(Ptr)) {
-                Out := unset
-                return
-            }
-
-            switch (NumGet(Ptr, "Int")) {
-                case 0, 1, 10: Out := unset
-                case 2, 3, 20: Out := NumGet(Ptr + A_PtrSize, "Int64")
-                case 4, 5: Out := NumGet(Ptr + A_PtrSize, "Double")
-                case 8: Out := StrGet(NumGet(Ptr + A_PtrSize, "Ptr"))
-                case 9: Out := ObjFromPtrAddRef(NumGet(Ptr + A_PtrSize, "Ptr"))
-                default: Out := unset
-            }
-        }
-
-        Compare(Ptr1?, Ptr2?) {
-            GetValue(Ptr1?, &Val1)
-            GetValue(Ptr2?, &Val2)
-            return Comp(Val1?, Val2?)
-        }
-
-        Comp       := Comp ?? Comparator.Numeric()
-        Callback   := Compare
-        pCallback  := CallbackCreate(Callback, "F CDecl", 2)
-
-        VariantBuf := Buffer(24, 0)
-        Ref        := ComValue(0x400C, VariantBuf.Ptr)
-        Ref[]      := this
-
-        Result := DllCall(
-            A_LineFile . "\..\Array.Sort.dll\sort",
-            "Ptr", Ref,
-            "Int", this.Length,
-            "Ptr", pCallback,
-            "Int"
-        )
-        
-        if (Result) {
-            throw Error("unable to sort array - ERROR CODE " . Result)
-        }
-
-        if (Reversed) {
-            this.Reverse()
-        }
-        CallbackFree(pCallback)
-        return this
-    }
-
-    /*
-    Sort(Comp?, Reversed := false) {
         static SizeOfField := 16
         static FieldOffset := CalculateFieldOffset()
         static CalculateFieldOffset() {
@@ -298,6 +246,58 @@ class Array {
                 "Ptr",  pCallback,
                 "Cdecl")
         CallbackFree(pCallback)
+        return this
+    }
+
+    /*
+    Sort(Comp?, Reversed := false) {
+
+        static GetValue(Ptr, &Out) {
+            if (!IsSet(Ptr)) {
+                Out := unset
+                return
+            }
+
+            switch (NumGet(Ptr, "Int")) {
+                case 0, 1, 10: Out := unset
+                case 2, 3, 20: Out := NumGet(Ptr + A_PtrSize, "Int64")
+                case 4, 5: Out := NumGet(Ptr + A_PtrSize, "Double")
+                case 8: Out := StrGet(NumGet(Ptr + A_PtrSize, "Ptr"))
+                case 9: Out := ObjFromPtrAddRef(NumGet(Ptr + A_PtrSize, "Ptr"))
+                default: Out := unset
+            }
+        }
+
+        Compare(Ptr1?, Ptr2?) {
+            GetValue(Ptr1?, &Val1)
+            GetValue(Ptr2?, &Val2)
+            return Comp(Val1?, Val2?)
+        }
+
+        Comp       := Comp ?? Comparator.Numeric()
+        Callback   := Compare
+        pCallback  := CallbackCreate(Callback, "F CDecl", 2)
+
+        VariantBuf := Buffer(24, 0)
+        Ref        := ComValue(0x400C, VariantBuf.Ptr)
+        Ref[]      := this
+
+        Result := DllCall(
+            A_LineFile . "\..\Array.Sort.dll\sort",
+            "Ptr", Ref,
+            "Int", this.Length,
+            "Ptr", pCallback,
+            "Int"
+        )
+        CallbackFree(pCallback)
+        
+        if (Result) {
+            throw Error("unable to sort array - ERROR CODE " . Result)
+        }
+
+        if (Reversed) {
+            this.Reverse()
+        }
         return this
     }
     */
