@@ -8,6 +8,7 @@
  */
 class Any {
     static __Call() {
+        ; good enough - trust me bro.
         65.Chr().AssertEquals("A")
     }
 
@@ -52,11 +53,11 @@ class Any {
     }
 
     static Stream1() {
-        "Hello world!".Stream()
+        Array(1, 2, 3, 4, 5).Stream().AssertType(Stream)
     }
 
     static Stream2() {
-        "Hello world!".Stream(2)
+        Array(1, 2, 3, 4, 5).Stream(2).AssertType(Stream)
     }
     
     static Optional() {
@@ -64,30 +65,23 @@ class Any {
     }
 
     static AssertNumber1() {
-        Num := 912.12
-        Num.AssertNumber()
+        (912.12).AssertNumber()
     }
 
     static AssertNumber2() {
-        Num := "912.12"
-        Num.AssertNumber().AssertType(Float)
+        "912.12".AssertNumber().AssertType(Float)
     }
 
     static AssertInteger1() {
-        Int := 123
-        Int.AssertInteger()
+        (123).AssertInteger()
     }
 
     static AssertInteger2() {
-        Int := "123"
-        Int.AssertInteger().AssertType(Integer)
+        "123".AssertInteger().AssertType(Integer)
     }
 
     static AssertCallable1() {
-        Obj := Object()
-        Obj.Call := (Obj) => MsgBox("Hello world!")
-
-        Obj.AssertCallable()
+        ({ Call: (Obj) => MsgBox("Hello world!") }).AssertCallable()
     }
 
     static AssertCallable2() {

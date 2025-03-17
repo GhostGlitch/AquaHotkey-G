@@ -187,7 +187,6 @@ class String {
         "Test123Abc".CaptureAll("\d").Join(" ").AssertEquals("1 2 3")
     }
 
-    ; TODO better tests for Insert, Overwrite, Delete
     static Insert1() {
         "def".Insert("abc").AssertEquals("abcdef")
     }
