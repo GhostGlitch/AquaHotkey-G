@@ -64,8 +64,9 @@ class Func {
         }
         Memo := FibonacciSequence.Memoized()
 
-         ; 100ms max time for calculation
-        SetTimer(() => IsSet(Result) || TimeoutError.Throw("timeout"), -100)
+        ; 100ms max time for calculation, which is not enough if this function
+        ; runs at O(2^n)
+        SetTimer(() => (IsSet(Result) || Timeout()))
         Result := FibonacciSequence(80)
 
         Timeout() {

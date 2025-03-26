@@ -23,6 +23,6 @@ class Buffer {
     }
 
     static OfString() {
-        Buffer.OfString("AAA", "UTF-8").HexDump() ; "41 41 41 00"
+        Buffer.OfString("AAA", "UTF-8").HexDump().AssertEquals("41 41 41 00 ")
     }
 }

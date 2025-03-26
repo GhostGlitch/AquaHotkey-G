@@ -1,9 +1,9 @@
 # 02 - Class Prototyping
 
 AutoHotkey’s built-in classes are powerful, but they cannot easily be extended
-dynamically. You cannot simply add a method to `Array` or `Gui` as you would in
-other languages. Unless you want to deep-dive into the intrinsics of class
-prototyping, you're forced to write **wrapper functions** like this:
+dynamically. You cannot easily add a method to `Array` or `Gui`. Unless you want
+to deep-dive into the intrinsics of class prototyping, you're forced to write
+**wrapper functions** like this:
 
 ```ahk
 ; traditional approach without AquaHotkey
@@ -50,7 +50,7 @@ these three steps:
    }
    ```
 
-2. Create a nested class, named after the class to modify:
+2. Create a nested class, named after the target class you want to modify:
 
    ```ahk
    class ArrayExtensions extends AquaHotkey {
@@ -60,12 +60,8 @@ these three steps:
    }
    ```
 
-3. Write new properties into this nested class. The `this`-keyword refers to the
-   object instance which the method belongs to (for static properties, the
-   class itself).
-
-   The syntax is exactly the same as if the nested class resembles the actual
-   built-in class, making it very easy to write new properties.
+3. Create new properties, exactly as if you were working on the actual
+   built-in class.
 
    ```ahk
    class ArrayExtensions extends AquaHotkey {
@@ -83,8 +79,8 @@ these three steps:
    }
    ```
 
-4. During runtime, the `AquaHotkey` class transfers all properties to the desired
-   class or function.
+4. During runtime, the `AquaHotkey` class transfers will process all of your
+   custom properties, adding them to the desired class or function accordingly.
 
    ```ahk
    Arr := [1, 2, 3, 4]
@@ -104,7 +100,7 @@ these three steps:
           ; Extra setup, e.g. forcing a backup or defining more properties
           ; and methods dynamically
 
-          ; see ## 
+          ; (see [## Preserving Original Methods When Overriding])
           (ArrayBackup)
 
           ; ... and then call `super.__New()`
@@ -189,8 +185,8 @@ MsgBox(Arr.Foo)          ; "bar"
 >When defining instance variable declarations for `Object` and `Any`, use
 an `__Init()`-method **with a function body**!
 
-Otherwise, the user-defined `__Init()` call will try to implicitly call
-`super.__Init()`, causing infinite recursion, causing the script to fail.
+Otherwise, the user-defined `__Init()` will infinitely recurse, causing the
+script to fail.
 
 ```ahk
 class ObjectExtensions extends AquaHotkey {

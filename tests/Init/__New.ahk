@@ -7,7 +7,8 @@
  * - tests/Init/__New.ahk
  */
 static __New() {
-    Output := ""
+    Output := "TESTS: AutoHotkey " . A_AHKVersion . "`n" . "-".Repeat(60) . "`n"
+
     for ClsName in ObjOwnProps(this) {
         Cls := this.%ClsName%
         if (!(Cls is Class)) {
