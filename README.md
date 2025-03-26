@@ -14,6 +14,19 @@ an interface for extending built-in classes and functions. Users can define new
 properties and methods for built-in types like `String`, `Array`, or even
 built-in functions with minimal effort.
 
+### Example: Define New Array Properties
+
+```ahk
+class ArrayExtensions extends AquaHotkey {
+    class Array {
+        IsEmpty => (!this.Length)
+    }
+}
+
+Arr := []
+MsgBox(Arr.IsEmpty) ; true
+```
+
 ---
 
 ## **Key Features**
@@ -55,11 +68,12 @@ built-in functions with minimal effort.
 
    ```ahk
    #Requires AutoHotkey >=v2.0.5
-   #Include  %A_LineFile%/../path/to/AquaHotkey.ahk
+   #Include  path/to/AquaHotkey.ahk
    ```
 
-   Using `%A_LineFile%/../` is extremely useful for including files
-   by relative path.
+Consider moving the repository into your user library path
+(`%A_Documents%/AutoHotkey/lib`) to manage your scripts and libraries
+more easily.
 
 #### Using AquaHotkey_Minimal
 
