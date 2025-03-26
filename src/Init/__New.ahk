@@ -81,7 +81,7 @@ static __New() {
      * @param   {Class}  ClassObj  property supplier to delete properties from
      */
     static DiscardProperties(ClassObj) {
-        static Props := ["__Init", "Call", "__New", "__Class", "Prototype"]
+        static Props := ["__Init", "__Class", "Prototype"]
         Proto := ClassObj.Prototype
         for PropertyName in Props {
             Delete(ClassObj, PropertyName)
@@ -203,10 +203,11 @@ static __New() {
         ; e.g. `AquaHotkey.Gui`              | `Gui`
         ;       `--> `AquaHotkey.Gui.Button` |  `--> `Gui.Button`
         static DoRecursion(Supplier, Receiver, PropertyName) {
-            return (Supplier is Class) && (Supplier.%PropertyName% is Class)
-                && (Receiver is Class) && (Receiver.%PropertyName% is Class)
-                ; e.g. InStr("AquaHotkey.Integer", "Integer")
-                && InStr(Type(Supplier), Type(Receiver))
+            try return (Supplier is Class) && (Supplier.%PropertyName% is Class)
+                    && (Receiver is Class) && (Receiver.%PropertyName% is Class)
+                    ; e.g. InStr("AquaHotkey.Integer", "Integer")
+                    && InStr(Type(Supplier), Type(Receiver))
+            return false
         }
 
         ; Transfer all static properties

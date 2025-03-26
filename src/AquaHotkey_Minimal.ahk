@@ -23,3 +23,5 @@ if (A_ScriptFullPath == A_LineFile) {
 class AquaHotkey {
     #Include %A_LineFile%/../Init/__New.ahk
 }
+
+#Include %A_LineFile%/../Init/PropertyBackup.ahk
