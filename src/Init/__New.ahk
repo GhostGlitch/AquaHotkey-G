@@ -127,6 +127,17 @@ static __New() {
             } else {
                 Receiver := Deref2(ClassName)
             }
+
+            SupplierName := Supplier.Prototype.__Class
+            SupplierProtoName := SupplierName . ".Prototype"
+            if (Receiver is Func) {
+                ReceiverProtoName := ReceiverName := Receiver.Name
+            } else {
+                ReceiverName := Receiver.Prototype.__Class
+                ReceiverProtoName := ReceiverName . ".Prototype"
+            }
+
+            OutputDebug("[AquaHotkey] " . SupplierName . " -> " . ReceiverName)
         }
         catch
         {
@@ -203,6 +214,10 @@ static __New() {
             if (DoRecursion(Supplier, Receiver, PropertyName)) {
                 Overwrite(Supplier, PropertyName, DeletionQueue, Receiver)
             } else {
+                SrcName := SupplierName . "." . PropertyName
+                DstName := ReceiverName . "." . PropertyName
+
+                OutputDebug("[AquaHotkey] " . SrcName . " -> " . DstName)
                 PropDesc := Supplier.GetOwnPropDesc(PropertyName)
                 Define(Receiver, PropertyName, PropDesc)
             }
@@ -210,11 +225,17 @@ static __New() {
         
         ; Transfer all non-static properties
         for PropertyName in ObjOwnProps(SupplierProto) {
+            SrcName := SupplierProtoName . "." . PropertyName
+            DstName := ReceiverProtoName . "." . PropertyName
+            OutputDebug("[AquaHotkey] " . SrcName . " -> " . DstName)
+
             PropDesc := SupplierProto.GetOwnPropDesc(PropertyName)
             Define(ReceiverProto, PropertyName, PropDesc)
         }
     }
     
+    OutputDebug("[AquaHotkey] initializing...")
+
     ; Loop through all properties of AquaHotkey and modify classes
     for PropertyName in ObjOwnProps(this) {
         Overwrite(this, PropertyName, DeletionQueue, unset)
