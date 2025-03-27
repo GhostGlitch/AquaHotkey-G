@@ -27,23 +27,40 @@ class PropertyBackup {
         static Define(Obj, PropertyName, PropertyDesc) {
             (Object.Prototype.DefineProp)(Obj, PropertyName, PropertyDesc)
         }
+        static GetPropDesc(Obj, PropertyName) {
+            return (Object.Prototype.GetOwnPropDesc)(Obj, PropertyName)
+        }
+        static CreateGetter(Value) => { Get: (Instance) => Value }
 
         if (this.base == Object) {
             return
         }
-        ClsName := this.Prototype.__Class
+        Receiver     := this
+        ReceiverName := Receiver.Prototype.__Class
         if (!ObjHasOwnProp(this, "Class")) {
-            throw UnsetError('expected a "static Class" property',, ClsName)
+            throw UnsetError('expected "static Class" property',, ReceiverName)
         }
+        Supplier     := this.Class
+        SupplierName := Supplier.Prototype.__Class
+        FormatString := "`n[Aqua] ######## Backup: {1} -> {2} ########`n"
+        OutputDebug(Format(FormatString, SupplierName, ReceiverName))
         Transfer(this.Class, this)
 
         static Transfer(Supplier, Receiver) {
             ReceiverProto := Receiver.Prototype
+            ReceiverName  := ReceiverProto.__Class
             switch {
-                case (Supplier is Class): SupplierProto := Supplier.Prototype
-                case (Supplier is Func):  SupplierProto := Supplier
-                default:                  throw TypeError("unexpected type")
+                case (Supplier is Class):
+                    SupplierProto := Supplier.Prototype
+                    SupplierName  := SupplierProto.__Class
+                case (Supplier is Func):
+                    SupplierProto := Supplier
+                    SupplierName  := Supplier.Name
+                default:
+                    throw TypeError("unexpected type")
             }
+            FormatString := "[Aqua] {1:-40} -> {2}"
+            OutputDebug(Format(FormatString, SupplierName, ReceiverName))
 
             for PropertyName in ObjOwnProps(Supplier) {
                 ; DO NOT REMOVE THIS
@@ -58,23 +75,32 @@ class PropertyBackup {
                 } 
 
                 if (DoRecursion) {
+                    NestedClass     := Supplier.%PropertyName%
+                    NestedClassName := NestedClass.Prototype.__Class
+                    if (Index := InStr(NestedClassName, ".")) {
+                        NestedClassName := SubStr(NestedClassName, Index + 1)
+                    }
+                    
                     NewClass := Class()
                     NewProto := Object()
+
                     Define(NewClass, "Prototype", CreateGetter(NewProto))
+                    NewName := ReceiverName . "." . NestedClassName
+
+                    Define(NewProto, "__Class", CreateGetter(NewName))
                     Define(Receiver, PropertyName, CreateGetter(NewClass))
-                    Transfer(Supplier.%PropertyName%, NewClass)
+
+                    Transfer(NestedClass, NewClass)
                 } else {
-                    PropDesc := Supplier.GetOwnPropDesc(PropertyName)
+                    PropDesc := GetPropDesc(Supplier, PropertyName)
                     Define(Receiver, PropertyName, PropDesc)
                 }
             }
 
             for PropertyName in ObjOwnProps(SupplierProto) {
-                PropDesc := SupplierProto.GetOwnPropDesc(PropertyName)
+                PropDesc := GetPropDesc(SupplierProto, PropertyName)
                 Define(ReceiverProto, PropertyName, PropDesc)
             }
         }
-
-        static CreateGetter(Value) => { Get: (Instance) => Value }
     }
 }

@@ -76,7 +76,7 @@ static __New() {
 
     /**
      * This method gets rid of special class properties from property suppliers,
-     * namely `__Init()`, `Call()`, `__New()`, `__Class` and `Prototype`.
+     * namely `__Init()`, `__Class` and `Prototype`.
      * 
      * @param   {Class}  ClassObj  property supplier to delete properties from
      */
@@ -94,19 +94,29 @@ static __New() {
      * 
      * @param   {Class}   RootClass      class that encloses property supplier
      * @param   {String}  ClassName      name of a property
-     * @param   {Array}   DeletionQueue  `static DeletionQueue`
+     * @param   {Array}   DeletionQueue  reference to `static DeletionQueue`
      * @param   {Class?}  Namespace      scope to find property receiver in
      */
     static Overwrite(RootClass, ClassName, DeletionQueue, Namespace?) {
         ; Get property from root class and check if it's a property supplier,
         ; otherwise return
-        Supplier := RootClass.%ClassName%
-        if (!(Supplier is Class)) {
+        try Supplier := RootClass.%ClassName%
+        if (!IsSet(Supplier) || !(Supplier is Class)) {
+            return
+        }
+
+        ; ignore classes that are meant for holding property backups
+        if (HasBase(Supplier, PropertyBackup)) {
             return
         }
         
         ; Get a reference to the prototype
         SupplierProto := Supplier.Prototype
+
+        ; Ignore classes that are meant for property backup
+        if (Supplier is PropertyBackup) {
+            return
+        }
         
         ; Try to find a property receiver (usually a built-in class)
         try
@@ -137,18 +147,20 @@ static __New() {
                 ReceiverProtoName := ReceiverName . ".Prototype"
             }
 
-            OutputDebug("[AquaHotkey] " . SupplierName . " -> " . ReceiverName)
+            FormatString := "[Aqua] {1:-40} -> {2}"
+            OutputDebug(Format(FormatString, SupplierName, ReceiverName))
         }
         catch
         {
             ; Oops! unable to find property receiver.
             ; Let's try to throw a reasonable exception here...
-            SupplierName := Supplier.Prototype.__Class
+            RootClassName := RootClass.Prototype.__Class
             ReceiverName := IsSet(Namespace)
                                 ? Namespace.Prototype.__Class . "." . ClassName
                                 : ClassName
-            Msg   := SupplierName . " is unable to resolve a property receiver"
-            Extra := ReceiverName
+            
+            Msg   := "unable to extend class " . ReceiverName
+            Extra := "class " . RootClassName
             throw UnsetError(Msg,, Extra)
         }
         
@@ -195,8 +207,8 @@ static __New() {
             Define(ReceiverProto, "__Init", { Call: __Init })
         }
 
-        ; Get rid of properties `__Init`, `__New`, `__Class`, `Call` and
-        ; `Prototype` in the user-defined class before transferring properties
+        ; Get rid of properties `__Init`, `__Class` and `Prototype` in the
+        ; user-defined class before transferring properties
         DiscardProperties(Supplier)
 
         ; Checks if the property is a nested class that should be recursed into,
@@ -206,7 +218,8 @@ static __New() {
             try return (Supplier is Class) && (Supplier.%PropertyName% is Class)
                     && (Receiver is Class) && (Receiver.%PropertyName% is Class)
                     ; e.g. InStr("AquaHotkey.Integer", "Integer")
-                    && InStr(Type(Supplier), Type(Receiver))
+                    && InStr(Supplier.%PropertyName%.Prototype.__Class,
+                             Receiver.%PropertyName%.Prototype.__Class)
             return false
         }
 
@@ -215,10 +228,6 @@ static __New() {
             if (DoRecursion(Supplier, Receiver, PropertyName)) {
                 Overwrite(Supplier, PropertyName, DeletionQueue, Receiver)
             } else {
-                SrcName := SupplierName . "." . PropertyName
-                DstName := ReceiverName . "." . PropertyName
-
-                OutputDebug("[AquaHotkey] " . SrcName . " -> " . DstName)
                 PropDesc := Supplier.GetOwnPropDesc(PropertyName)
                 Define(Receiver, PropertyName, PropDesc)
             }
@@ -226,16 +235,13 @@ static __New() {
         
         ; Transfer all non-static properties
         for PropertyName in ObjOwnProps(SupplierProto) {
-            SrcName := SupplierProtoName . "." . PropertyName
-            DstName := ReceiverProtoName . "." . PropertyName
-            OutputDebug("[AquaHotkey] " . SrcName . " -> " . DstName)
-
             PropDesc := SupplierProto.GetOwnPropDesc(PropertyName)
             Define(ReceiverProto, PropertyName, PropDesc)
         }
     }
     
-    OutputDebug("[AquaHotkey] initializing...")
+    FormatString := "`n[Aqua] ######## Extension Class: {1} ########`n"
+    OutputDebug(Format(FormatString, this.Prototype.__Class))
 
     ; Loop through all properties of AquaHotkey and modify classes
     for PropertyName in ObjOwnProps(this) {
