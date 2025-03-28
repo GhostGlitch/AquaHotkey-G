@@ -2,13 +2,14 @@
 
 ## Method Summary
 
-| Method Name                                              | Return Type   | Description                                              |
-| -------------------------------------------------------- | ------------- | -------------------------------------------------------- |
-| [`Log(BaseN := 10)`](#Log)                               | `Number`      | Returns the logarithm base `BaseN` of this number        |
-| [`AssertGreater(x, Msg?)`](#AssertGreater)               | `this`        | Asserts that this number is greater then x               |
-| [`AssertGreaterOrEqual(x, Msg?)`](#AssertGreaterOrEqual) | `this`        | Asserts that this number is greater than or equal to `x` |
-| [`AssertLess(x, Msg?)`](#AssertLess)                     | `this`        | Asserts that this number is less than `x`                |
-| [`AssertLessOrEqual(x, Msg?)`](#AssertLessOrEqual)       | `this`        | Asserts thats this number is less than or equal to `x`   |
+| Method Name                                              | Return Type   | Description                                                            |
+| -------------------------------------------------------- | ------------- | ---------------------------------------------------------------------- |
+| [`Log(BaseN := 10)`](#Log)                               | `Number`      | Returns the logarithm base `BaseN` of this number                      |
+| [`AssertGreater(x, Msg?)`](#AssertGreater)               | `this`        | Asserts that this number is greater then x                             |
+| [`AssertGreaterOrEqual(x, Msg?)`](#AssertGreaterOrEqual) | `this`        | Asserts that this number is greater than or equal to `x`               |
+| [`AssertLess(x, Msg?)`](#AssertLess)                     | `this`        | Asserts that this number is less than `x`                              |
+| [`AssertLessOrEqual(x, Msg?)`](#AssertLessOrEqual)       | `this`        | Asserts that this number is less than or equal to `x`                  |
+| [`AssertInRange(x, y, Msg?)`](#AssertInRange)            | `this`        | Asserts that this number is in the inclusive range between `x` and `y` |
 
 ---
 
@@ -162,6 +163,34 @@ Asserts that this number is less than or equal to `x`. Otherwise, a `ValueError`
 | `Msg`          | `String?` | Message of the error thrown |
 
 **Return Value**:
+
+- **Type**: `this`
+
+---
+
+<a id="AssertInRange"></a>
+
+### `AssertInRange(x, y, Msg?)`
+
+**Description**:
+
+Asserts that this number is in the inclusive range between `x` and `y`.
+
+**Example**:
+
+```ahk
+34.AssertInRange(1, 100, "value is not between 1-100")
+```
+
+**Parameters**:
+
+| Parameter Name | Type      | Description                 |
+| -------------- | --------- | --------------------------- |
+| `x`            | `Number`  | Lower limit                 |
+| `y`            | `Number`  | Upper limit                 |
+| `Msg`          | `String?` | Message of the error thrown |
+
+**Return Type**:
 
 - **Type**: `this`
 

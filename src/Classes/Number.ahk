@@ -106,10 +106,32 @@ class Number {
      * @param   {String?}  Msg  error message
      * @return  {this}
      */
-    AssertLessOrEqual(X, Msg?) {
-        if (this <= X) {
+    AssertLessOrEqual(x, Msg?) {
+        if (this <= x) {
             return this
         }
         throw ValueError(Msg ?? "number is greater than " . X,, this)
+    }
+
+    /**
+     * Asserts that this number lies in the inclusive range between `x` and `y`.
+     * 
+     * @example
+     * 
+     * (12).AssertInRange(1, 100, "number is not between 1-100")
+     * 
+     * @param   {Number}   x    lower limit
+     * @param   {Number}   y    upper limit
+     * @param   {String?}  Msg  error message
+     * @return  {this}
+     */
+    AssertInRange(x, y, Msg?) {
+        Hi := Max(x, y)
+        Lo := Min(x, y)
+        if ((this < Lo) || (this > Hi)) {
+            throw ValueError(Msg ?? "number is not in range "
+                                  . Lo . " - " . Hi,, this)
+        }
+        return this
     }
 }
