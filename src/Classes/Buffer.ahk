@@ -124,10 +124,13 @@ class Buffer {
      */
     static OfString(Str, Encoding?) {
         Str.AssertType(Primitive)
-        Encoding.AssertType(Primitive)
-        
-        Buf := Buffer(StrPut(Str, Encoding?))
-        StrPut(Str, Buf, Encoding?)
+        if (IsSet(Encoding)) {
+            Buf := Buffer(StrPut(Str, Encoding))
+            StrPut(Str, Buf, Encoding)
+            return Buf
+        }
+        Buf := Buffer(StrPut(Str))
+        StrPut(Str, Buf)
         return Buf
     }
 
@@ -142,6 +145,6 @@ class Buffer {
      */
     ToString() {
         Ptr  := Format("{:p}", this.Ptr)
-        return Type(this) "{ Ptr: " . Ptr . ", Size: " . this.Size . " }"
+        return Type(this) . "{ Ptr: " . Ptr . ", Size: " . this.Size . " }"
     }
 }
