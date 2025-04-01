@@ -1,5 +1,5 @@
 #Requires AutoHotkey >=2.0.5
-#Include %A_LineFile%/../../../AquaHotkey_Minimal.ahk
+#Include %A_LineFile%/../../../AquaHotkey.ahk
 
 /**
  * AquaHotkey - IPv4.ahk
@@ -23,8 +23,7 @@
  * 
  * g := Gui()
  * Ctl := g.AddIPv4("w250", "192.168.0.1")
- * Ctl.OnEditChange(EditChangedCallback)
- * Ctl.OnFieldChange(FieldChangedCallback)
+ * Ctl.OnEvent("Change", ChangedCallback)
  * 
  * g.Show()
  * 
@@ -58,7 +57,7 @@
  * 
  * @extends AquaHotkey
  */
-class IPv4 extends AquaHotkey {
+class IPv4Extension extends AquaHotkey {
     class Gui {
         /**
          * Adds an IPv4 control to the GUI.
@@ -69,47 +68,11 @@ class IPv4 extends AquaHotkey {
         AddIPv4(Opt := "", Addr?) {
             Ctl := this.Add("Custom", "ClassSysIPAddress32 r1 " . Opt)
             ObjSetBase(Ctl, Gui.IPv4.Prototype)
-            if (IsSet(Addr)) {
-                Ctl.Address := Addr
-            }
+            (IsSet(Addr) && Ctl.Address := Addr)
             return Ctl
         }
 
         class IPv4 extends Gui.Custom {
-            /**
-             * Registers a function to call when the edit of the IPv4 control
-             * is changed.
-             * 
-             * @example
-             * 
-             * EditChanged(GuiCtrl) {
-             *     ; ...
-             * }
-             * 
-             * @param   {Func/String}  Callback   function to call on event
-             * @param   {Integer?}     AddRemove  adds or removes the callback
-             */
-            OnEditChange(Callback, AddRemove?) {
-                this.OnCommand(0x300, Callback, AddRemove?)
-            }
-
-            /**
-             * Registers a function to call when a field of the IPv4 control
-             * is changed.
-             * 
-             * @example
-             * 
-             * FieldChanged(GuiCtrl, NMIPADDRESS) {
-             *     ; ...
-             * }
-             * 
-             * @param   {Func/String}  Callback   function to call on event
-             * @param   {Integer?}     AddRemove  adds or removes the callback
-             */
-            OnFieldChange(Callback, AddRemove?) {
-                this.OnNotify(-860, Callback, AddRemove?)
-            }
-
             /**
              * Gets or sets the IPv4 address of the control.
              * 
@@ -144,9 +107,8 @@ class IPv4 extends AquaHotkey {
                                 NumGet(AddrWord, 1, "Uchar"),
                                 NumGet(AddrWord, 0, "Uchar"))
                     }
-                    if (!IsInteger(Octet) || (Octet < 1) || (Octet > 4)) {
-                        throw ValueError("invalid octet value")
-                    }
+                    Octet.AssertInteger().AssertGreaterOrEqual(0)
+                         .AssertLessOrEqual(4)
                     return NumGet(AddrWord, 4 - Octet, "UChar")
                 }
 
@@ -155,33 +117,24 @@ class IPv4 extends AquaHotkey {
                     static IPM_GETADDRESS := 0x0400 + 102
 
                     if (!IsSet(Octet)) {
-                        switch {
-                            case (value is Array):
-                                Bytes := value
-                            case (value is String):
-                                Bytes := StrSplit(value, ".")
-                            default:
-                                throw TypeError("invalid IP address")
+                        if (value is String) {
+                            value := StrSplit(value, ".")
                         }
-                        if (Bytes.Length != 4) {
-                            throw ValueError("invalid IPv4 address",, value)
-                        }
+                        Bytes := value.AssertType(Array)
+                        Bytes.Length.AssertEquals(4, "invalid IPv4 address")
 
                         IPAddr := 0
                         for b in Bytes {
-                            if (!IsInteger(b) || (b < 0) || (b > 255)) {
-                                throw ValueError("invalid octet",, b)
-                            }
+                            b.AssertInteger().AssertGreaterOrEqual(0)
+                             .AssertLessOrEqual(255)
+
                             IPAddr <<= 8
                             IPAddr += b
                         }
                         SendMessage(IPM_SETADDRESS, 0, IPAddr, this)
                         return value
                     }
-
-                    if (!IsInteger(Octet) || (Octet < 1) || (Octet > 4)) {
-                        throw TypeError("invalid index",, Type(value))
-                    }
+                    
                     if (!IsInteger(value) || (value < 0) || (value > 255)) {
                         throw ValueError("invalid octet value",, value)
                     }
@@ -239,6 +192,38 @@ class IPv4 extends AquaHotkey {
                 SendMessage(IPM_SETRANGE, Index - 1, lParam, this)
             }
 
+            /**
+             * Registers a callback function to call when an event is raised.
+             * 
+             * @example
+             * 
+             * Focus(IPv4) { ... }
+             * LoseFocus(IPv4) { ... }
+             * Change(IPv4) { ... }
+             * FieldChange(IPv4, lParam) { ... }
+             * 
+             * @param   {String}    EventName  name of the event
+             * @param   {Func}      Callback   the function to call
+             * @param   {Integer?}  AddRemove  add or remove the callback
+             */
+            OnEvent(EventName, Callback, AddRemove?) {
+                static SupportedEvents := Map(
+                    "Focus",     0x0100,
+                    "LoseFocus", 0x0200,
+                    "Change",    0x0300)
+                
+                if (!(EventName is Primitive)) {
+                    throw TypeError("invalid event name",, Type(EventName))
+                }
+                if (EventName = "FieldChange") {
+                    return super.OnNotify(-860, Callback, AddRemove?)
+                }
+                if (!SupportedEvents.Has(EventName)) {
+                    throw ValueError("unsupported event",, EventName)
+                }
+                NotifyCode := SupportedEvents[EventName]
+                return super.OnCommand(NotifyCode, Callback, AddRemove?)
+            }
         }
     }
 }
