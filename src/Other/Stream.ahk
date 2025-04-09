@@ -310,9 +310,9 @@ class Stream {
     }
 
     /**
-     * Returns a new stream which transforms its elements by applying the given
-     * `Mapper` function, resulting arrays of which are flattened into separate
-     * elements.
+     * Returns a new stream which transforms its elements by optionally applying
+     * the given `Mapper` function, and then flattening resulting arrays into
+     * separate elements. Non-`Array` elements are not flattened.
      * 
      * Streams returned by this method have a parameter length of 1.
      * @example
@@ -323,11 +323,23 @@ class Stream {
      * ; <1, "foo", 2, "bar">
      * Array("foo", "bar").Stream(2).FlatMap(Array)
      * 
+     * ; <1, 2, 3, 4, 5, 6, 7, 8>
+     * Array([1, 2, 3], 4, [5, 6], 7, [8]).Stream().FlatMap()
+     * 
      * @param   {Func?}  Mapper  function that returns zero or more new elements
      * @return  {Stream}
      */
-    FlatMap(Mapper) {
+    FlatMap(Mapper?) {
         Enumer := (*) => false
+        if (!IsSet(Mapper)) {
+            switch (this.MaxParams) {
+                case 1: Mapper := (A) => A
+                case 2: Mapper := (A, B) => A
+                case 3: Mapper := (A, B, C) => A
+                case 4: Mapper := (A, B, C, D) => A
+            }
+        }
+
         n := this.ArgSize(Mapper)
         f := this.Call
         switch (n) {
@@ -416,22 +428,22 @@ class Stream {
      * }
      * 
      * ; <(2, "foo_"), (3, "bar_")>
-     * Array("foo", "bar").Stream(2).MapMulti(MutateValues)
+     * Array("foo", "bar").Stream(2).MapByRef(MutateValues)
      * 
      * @param   {Func}  Mapper  function that mutates elements by reference
      * @return  {Stream}
      */
-    MapMulti(Mapper) {
+    MapByRef(Mapper) {
         f := this.Call
         switch (this.MaxParams) {
-            case 1: return Stream(MapMulti1)
-            case 2: return Stream(MapMulti2)
-            case 3: return Stream(MapMulti3)
-            case 4: return Stream(MapMulti4)
+            case 1: return Stream(MapByRef1)
+            case 2: return Stream(MapByRef2)
+            case 3: return Stream(MapByRef3)
+            case 4: return Stream(MapByRef4)
         }
         throw ValueError("invalid parameter length",, this.MaxParams)
 
-        MapMulti1(&A) {
+        MapByRef1(&A) {
             while (f(&A)) {
                 Mapper(&A)
                 return true
@@ -439,7 +451,7 @@ class Stream {
             return false
         }
 
-        MapMulti2(&A, &B?) {
+        MapByRef2(&A, &B?) {
             while (f(&A, &B)) {
                 Mapper(&A, &B)
                 return true
@@ -447,7 +459,7 @@ class Stream {
             return false
         }
 
-        MapMulti3(&A, &B?, &C?) {
+        MapByRef3(&A, &B?, &C?) {
             while (f(&A, &B, &C)) {
                 Mapper(&A, &B, &C)
                 return true
@@ -455,7 +467,7 @@ class Stream {
             return false
         }
 
-        MapMulti4(&A, &B?, &C?, &D?) {
+        MapByRef4(&A, &B?, &C?, &D?) {
             while (f(&A, &B, &C, &D)) {
                 Mapper(&A, &B, &C, &D)
                 return true

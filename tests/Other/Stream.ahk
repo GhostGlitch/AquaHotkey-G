@@ -51,8 +51,16 @@ class Stream {
             .AssertEquals("H e l l o ,   w o r l d !")
     }
 
-    static MapMulti() {
-        static MapMulti(&Index, &Value) {
+    static FlatMap3() {
+        Array([1, 2, 3], 4, [5, 6], 7, [8])
+            .Stream()
+            .FlatMap()
+            .Join(" ")
+            .AssertEquals("1 2 3 4 5 6 7 8")
+    }
+
+    static MapByRef() {
+        static MapByRef(&Index, &Value) {
             Index *= 2
             Value .= "a"
         }
@@ -61,7 +69,7 @@ class Stream {
         }
         StrSplit("banana")
             .Stream(2)
-            .MapMulti(MapMulti)
+            .MapByRef(MapByRef)
             .Map(Mapper)
             .Join(", ")
             .AssertEquals("2=ba, 4=aa, 6=na, 8=aa, 10=na, 12=aa")

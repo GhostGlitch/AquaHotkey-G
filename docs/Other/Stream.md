@@ -189,11 +189,6 @@ Array("foo", "bar", "hello", "world").Stream(2).RetainIf((Index, Value) {
      because elements are mapped into the final result of the mapper
      function.
 
-2. **`.MapMulti()`**:
-   - Unlike in Java, this method accepts a function that mutates the current
-     elements by reference. It retains the same parameter length as the
-     original stream.
-
 3. **`.Max()`, `.Min()`, and `.Join()`**:
    - These methods only use the first parameter of the stream. To access
      other parameters, `.Map()` or `.FlatMap()` should be used to rearrange or
@@ -216,7 +211,7 @@ Array("foo", "bar", "hello", "world").Stream(2).RetainIf((Index, Value) {
 | [`RemoveIf(Condition)`](#RemoveIf)                             | `Stream`    | Returns a stream that removed all elements that match `Condition`                                   |
 | [`Map(Mapper)`](#Map)                                          | `Stream`    | Returns a stream that transforms elements by applying the given `Mapper` function                   |
 | [`FlatMap(Mapper)`](#FlatMap)                                  | `Stream`    | Returns a stream that transforms and flattens elements by applying the given `Mapper` function      |
-| [`MapMulti(Mapper)`](#MapMulti)                                | `Stream`    | Returns a stream that mutates its current elements by reference using `Mapper`                      |
+| [`MapByRef(Mapper)`](#MapByRef)                                | `Stream`    | Returns a stream that mutates its current elements by reference using `Mapper`                      |
 | [`FindFirst()`](#FindFirst)                                    | `Stream`    | Returns a stream limited to its first element set                                                   |
 | [`Limit(n)`](#Limit)                                           | `Stream`    | Returns a stream limited to `n` elements                                                            |
 | [`Skip(n)`](#Skip)                                             | `Stream`    | Returns a stream that skips the first `n` elements                                                  |
@@ -417,9 +412,9 @@ Array("foo", "bar").Stream(2).FlatMap(Array)
 
 ---
 
-<a id="MapMulti"></a>
+<a id="MapByRef"></a>
 
-### `MapMulti(Mapper: Func) => Stream`
+### `MapByRef(Mapper: Func) => Stream`
 
 **Description**:
 
@@ -437,7 +432,7 @@ MutateValues(&Index, &Value) {
 }
 
 ; <[2, "foo_"], [3, "bar_"]>
-Array("foo", "bar").Stream(2).MapMulti(MutateValues)
+Array("foo", "bar").Stream(2).MapByRef(MutateValues)
 ```
 
 **Parameters**:
