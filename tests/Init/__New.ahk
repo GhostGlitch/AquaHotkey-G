@@ -19,7 +19,7 @@ static __New() {
                 continue
             }
 
-            Function := Cls.%PropertyName%
+            Function := Cls.GetOwnPropDesc(PropertyName).Call
             try {
                 Function(Cls)
                 Output .= FormatTestResult(Function, true)

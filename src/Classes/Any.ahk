@@ -174,7 +174,12 @@ class Any {
         Get {
             ; Types: ClassName => Class
             static Types := Map()
-            if (ClassObj := Types.Get(ClassName := Type(this), false)) {
+            if (IsObject(this) && ObjHasOwnProp(this, "__Class")) {
+                ClassName := this.__Class
+            } else {
+                ClassName := Type(this)
+            }
+            if (ClassObj := Types.Get(ClassName, false)) {
                 return ClassObj
             }
             return Types[ClassName] := Class.ForName(ClassName)

@@ -44,12 +44,16 @@ class Any {
         Copy.AssertType(BoundFunc)
     }
 
-    static Property_Type() {
+    static Type() {
         "Hello world!".Type.AssertEquals("String")
     }
 
-    static Property_Class() {
+    static Class() {
         "Hello world!".Class.AssertEquals(String)
+    }
+
+    static Class2() {
+        (String.Prototype).Class.AssertEquals(String)
     }
 
     static Stream1() {
