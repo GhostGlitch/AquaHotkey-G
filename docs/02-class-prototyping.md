@@ -244,15 +244,15 @@ class GuiExtensions extends AquaHotkey {
 }
 ```
 
-### With `PropertyBackup` - A Cleaner Approach
+### With `AquaHotkey_Backup` - A Cleaner Approach
 
-Instead of manually storing functions, `PropertyBackup` automates this process.
+Instead of manually storing functions, `AquaHotkey_Backup` automates this process.
 
-To use it, extend `PropertyBackup` and set `static Class` to the target
+To use it, extend `AquaHotkey_Backup` and set `static Class` to the target
 class whose properties should be preserved.
 
 ```ahk
-class OriginalGui extends PropertyBackup {
+class OriginalGui extends AquaHotkey_Backup {
     static Class => Gui ; this creates a snapshot of `class Gui`
 }
 
@@ -275,3 +275,17 @@ class GuiExtensions extends AquaHotkey
 
 Now, `OriginalGui` automatically **preserves all methods and properties** -
 making modifications much safer and cleaner.
+
+## Exclude Nested Classes with `AquaHotkey_Ignore`
+
+To indicate that a class should be excluded from AquaHotkey's class prototyping
+system, extend your nested class with the special marker class
+`AquaHotkey_Ignore`.
+
+```ahk
+class Tanuki extends AquaHotkey {
+    class Util extends AquaHotkey_Ignore {
+        ; this class will be ignored by AquaHotkey's prototyping
+    }
+}
+```

@@ -24,4 +24,5 @@ class AquaHotkey {
     #Include %A_LineFile%/../Init/__New.ahk
 }
 
-#Include %A_LineFile%/../Init/PropertyBackup.ahk
+#Include %A_LineFile%/../Init/AquaHotkey_Backup.ahk
+#Include %A_LineFile%/../Init/AquaHotkey_Ignore.ahk

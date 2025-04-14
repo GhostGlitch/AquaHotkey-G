@@ -105,19 +105,18 @@ static __New() {
             return
         }
 
-        ; ignore classes that are meant for holding property backups
-        if (HasBase(Supplier, PropertyBackup)) {
+        ; ignore special classes that extend `AquaHotkey_Backup`
+        ; or `AquaHotkey_Ignore`
+        if (HasBase(Supplier, AquaHotkey_Backup)) {
+            return
+        }
+        if (HasBase(Supplier, AquaHotkey_Ignore)) {
             return
         }
         
         ; Get a reference to the prototype
         SupplierProto := Supplier.Prototype
 
-        ; Ignore classes that are meant for property backup
-        if (Supplier is PropertyBackup) {
-            return
-        }
-        
         ; Try to find a property receiver (usually a built-in class)
         try
         {

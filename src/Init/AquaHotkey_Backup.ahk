@@ -1,28 +1,28 @@
 /**
- * AquaHotkey - PropertyBackup.ahk
+ * AquaHotkey - AquaHotkey_Backup.ahk
  * 
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Init/PropertyBackup.ahk
+ * - src/Init/AquaHotkey_Backup.ahk
  * 
  * This class creates a snapshot of all properties and methods of a target
  * class before any modifications are applied. This allows for restoring or
  * referencing the original functionality when extending or modifying
  * built-in classes.
  * 
- * To use it, extend `PropertyBackup` and set `static Class` to the target
+ * To use it, extend `AquaHotkey_Backup` and set `static Class` to the target
  * class whose properties should be preserved.
  * 
  * @example
  * 
- * class OriginalGui extends PropertyBackup {
+ * class OriginalGui extends AquaHotkey_Backup {
  *     static Class => Gui
  * }
  * ; Now OriginalGui stores all original properties/methods of Gui
  * ; before modifications.
  */
-class PropertyBackup {
+class AquaHotkey_Backup {
     static __New() {
         static Define(Obj, PropertyName, PropertyDesc) {
             (Object.Prototype.DefineProp)(Obj, PropertyName, PropertyDesc)

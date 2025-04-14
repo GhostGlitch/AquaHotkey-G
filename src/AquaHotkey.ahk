@@ -78,4 +78,5 @@ class AquaHotkey
 #Include %A_LineFile%/../Other/UninstantiableClass.ahk
 #Include %A_LineFile%/../Other/Window.ahk
 
-#Include %A_LineFile%/../Init/PropertyBackup.ahk
+#Include %A_LineFile%/../Init/AquaHotkey_Backup.ahk
+#Include %A_LineFile%/../Init/AquaHotkey_Ignore.ahk
