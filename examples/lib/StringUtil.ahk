@@ -1,5 +1,5 @@
 #Requires AutoHotkey >=v2.0.5
-#Include <AquaHotkey_Minimal>
+#Include %A_LineFile%/../../../AquaHotkey.ahk
 
 class StringUtil extends AquaHotkey {
     class String {
