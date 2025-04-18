@@ -1,5 +1,3 @@
-#Include "%A_LineFile%/../DllFunc.ahk"
-#Include "%A_LineFile%/../DllCallType.ahk"
 /**
  * AquaHotkey - DLL.ahk
  * 

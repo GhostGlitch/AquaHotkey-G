@@ -1,6 +1,3 @@
-#Include "%A_LineFile%/../../Classes/Any.ahk"
-#Include "%A_LineFile%/../../Classes/Func.ahk"
-#Include "%A_LineFile%/../../Classes/Object.ahk"
 /**
  * AquaHotkey - Comparator.ahk
  * 
