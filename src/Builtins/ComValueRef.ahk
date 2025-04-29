@@ -5,7 +5,7 @@ class AquaHotkey_ComValueRef extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/classes/ComValueRef.ahk
+ * - src/Builtins/ComValueRef.ahk
  */
 class ComValueRef {
     Get() {

@@ -5,7 +5,7 @@ class AquaHotkey_InputHook extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/InputHook.ahk
+ * - src/Builtins/InputHook.ahk
  */
 class InputHook {
     /**

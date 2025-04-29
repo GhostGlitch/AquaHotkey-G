@@ -4,7 +4,7 @@
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - tests/Classes/VarRef.ahk
+ * - tests/Builtins/VarRef.ahk
  */
 class VarRef {
     static Ptr1() {

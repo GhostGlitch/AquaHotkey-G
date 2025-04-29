@@ -5,7 +5,7 @@ class AquaHotkey_MenuBar extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/MenuBar.ahk
+ * - src/Builtins/MenuBar.ahk
  */
 class MenuBar {
     

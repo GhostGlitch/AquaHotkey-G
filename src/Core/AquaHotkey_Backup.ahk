@@ -4,7 +4,7 @@
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Init/AquaHotkey_Backup.ahk
+ * - src/Core/AquaHotkey_Backup.ahk
  * 
  * This class creates a snapshot of all properties and methods of a target
  * class before any modifications are applied. This allows for restoring or

@@ -4,7 +4,7 @@
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - tests/Classes/Buffer.ahk
+ * - tests/Builtins/Buffer.ahk
  */
 class Buffer {
     static GetChar_PutChar() {

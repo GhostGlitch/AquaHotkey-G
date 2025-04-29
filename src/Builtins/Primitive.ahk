@@ -5,7 +5,7 @@ class AquaHotkey_Primitive extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/Primitive.ahk
+ * - src/Builtins/Primitive.ahk
  */
 class Primitive {
     /**

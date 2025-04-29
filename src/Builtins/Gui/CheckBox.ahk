@@ -4,7 +4,7 @@
  * Author: 0w0Demonic
  *
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/Gui/CheckBox.ahk
+ * - src/Builtins/Gui/CheckBox.ahk
  */
 ; class Gui {
 class CheckBox {

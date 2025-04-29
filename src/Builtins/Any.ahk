@@ -5,7 +5,7 @@ class AquaHotkey_Any extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/Any.ahk
+ * - src/Builtins/Any.ahk
  */
 class Any {
     /**

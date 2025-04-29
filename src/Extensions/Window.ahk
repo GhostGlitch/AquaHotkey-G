@@ -4,7 +4,7 @@
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Other/Window.ahk
+ * - src/Extensions/Window.ahk
  * 
  * The `Window` class wraps around the built-in window functions and minimizes
  * boilerplate code by summarizing WinTitle parameters into an object with

@@ -4,7 +4,7 @@
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - tests/Classes/Object.ahk
+ * - tests/Builtins/Object.ahk
  */
 class Object {
     static DefineConstant() {

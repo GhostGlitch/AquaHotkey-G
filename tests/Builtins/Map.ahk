@@ -4,7 +4,7 @@
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/Sphinx
- * - tests/Classes/Map.ahk
+ * - tests/Builtins/Map.ahk
  */
 class Map {
     static Default_Capacity_CaseSense() {

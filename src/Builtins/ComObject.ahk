@@ -5,7 +5,7 @@ class AquaHotkey_ComObject extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/ComObject.ahk
+ * - src/Builtins/ComObject.ahk
  */
 class ComObject {
     

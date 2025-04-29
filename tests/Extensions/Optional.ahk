@@ -4,7 +4,7 @@
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - tests/Other/Optional.ahk
+ * - tests/Extensions/Optional.ahk
  */
 class Optional {
     static Empty() {

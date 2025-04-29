@@ -5,7 +5,7 @@ class AquaHotkey_VarRef extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/VarRef.ahk
+ * - src/Builtins/VarRef.ahk
  */
 class VarRef {
     /**

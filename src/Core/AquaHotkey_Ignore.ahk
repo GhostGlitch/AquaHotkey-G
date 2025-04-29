@@ -2,7 +2,7 @@
  * AquaHotkey - AquaHotkey_Ignore.ahk
  * 
  * Author: 0w0Demonic
- * - src/Init/AquaHotkey_Ignore.ahk
+ * - src/Core/AquaHotkey_Ignore.ahk
  * 
  * `AquaHotkey_Ignore` is a special marker class used to indicate that a class
  * should be excluded from AquaHotkey's class prototyping system. It serves as

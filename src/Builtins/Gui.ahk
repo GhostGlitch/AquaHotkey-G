@@ -5,7 +5,7 @@ class AquaHotkey_Gui extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/Gui.ahk
+ * - src/Builtins/Gui.ahk
  */
 class Gui {
     #Include %A_LineFile%/../Gui/Control.ahk

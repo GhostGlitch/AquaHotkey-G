@@ -5,7 +5,7 @@ class AquaHotkey_Error extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/Error.ahk
+ * - src/Builtins/Error.ahk
  */
 class Error {
     /**

@@ -5,7 +5,7 @@ class AquaHotkey_String extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/String.ahk
+ * - src/Builtins/String.ahk
  */
 class String {
     /**

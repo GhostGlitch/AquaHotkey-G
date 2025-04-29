@@ -5,7 +5,7 @@ class AquaHotkey_File extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/File.ahk
+ * - src/Builtins/File.ahk
  */
 class File {
     /**

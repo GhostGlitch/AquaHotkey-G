@@ -5,7 +5,7 @@ class AquaHotkey_Object extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/Object.ahk
+ * - src/Builtins/Object.ahk
  */
 class Object {
     /**

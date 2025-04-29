@@ -5,7 +5,7 @@ class AquaHotkey_Enumerator extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/Enumerator.ahk
+ * - src/Builtins/Enumerator.ahk
  */
 class Enumerator {
 

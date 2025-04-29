@@ -4,7 +4,7 @@
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - tests/Classes/Func.ahk
+ * - tests/Builtins/Func.ahk
  */
 class Func {
     static __() {

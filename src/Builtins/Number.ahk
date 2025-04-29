@@ -5,7 +5,7 @@ class AquaHotkey_Number extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/Number.ahk
+ * - src/Builtins/Number.ahk
  */
 class Number {
     /** Constants pi and e */

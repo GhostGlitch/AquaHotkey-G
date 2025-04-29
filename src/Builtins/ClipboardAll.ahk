@@ -5,7 +5,7 @@ class AquaHotkey_ClipboardAll extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/ClipboardAll.ahk
+ * - src/Builtins/ClipboardAll.ahk
  */
 class ClipboardAll {
     

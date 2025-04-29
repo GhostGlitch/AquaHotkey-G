@@ -5,7 +5,7 @@ class AquaHotkey_RegExMatchInfo extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/RegExMatchInfo.ahk
+ * - src/Builtins/RegExMatchInfo.ahk
  */
 class RegExMatchInfo {
     

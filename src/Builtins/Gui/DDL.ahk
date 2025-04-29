@@ -4,7 +4,7 @@
  * Author: 0w0Demonic
  *
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/Gui/DDL.ahk
+ * - src/Builtins/Gui/DDL.ahk
  */
 ; class Gui {
 class DDL {

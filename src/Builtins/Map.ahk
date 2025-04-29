@@ -5,7 +5,7 @@ class AquaHotkey_Map extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/Map.ahk
+ * - src/Builtins/Map.ahk
  */
 class Map {
     /**

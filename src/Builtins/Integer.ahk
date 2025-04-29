@@ -5,7 +5,7 @@ class AquaHotkey_Integer extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/Integer.ahk
+ * - src/Builtins/Integer.ahk
  */
 class Integer {
     /**

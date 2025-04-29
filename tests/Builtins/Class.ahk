@@ -4,7 +4,7 @@
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - tests/Classes/Class.ahk
+ * - tests/Builtins/Class.ahk
  */
 class Class {
     static __Call() {

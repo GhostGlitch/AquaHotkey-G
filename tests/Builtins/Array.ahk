@@ -4,7 +4,7 @@
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/Sphinx
- * - tests/Classes/Array.ahk
+ * - tests/Builtins/Array.ahk
  */
 class Array {
     static PropertySetters() {

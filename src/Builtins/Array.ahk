@@ -5,7 +5,7 @@ class AquaHotkey_Array extends AquaHotkey {
  * Author: 0w0Demonic
  * 
  * https://www.github.com/0w0Demonic/AquaHotkey
- * - src/Classes/Array.ahk
+ * - src/Builtins/Array.ahk
  */
 class Array {
     /**
