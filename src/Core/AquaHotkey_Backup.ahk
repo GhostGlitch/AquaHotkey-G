@@ -22,7 +22,7 @@
  * ; Now OriginalGui stores all original properties/methods of Gui
  * ; before modifications.
  */
-class AquaHotkey_Backup {
+class AquaHotkey_Backup extends AquaHotkey_Ignore {
     /** Static initializer. */
     static __New() {
         /**
@@ -83,7 +83,7 @@ class AquaHotkey_Backup {
         }
 
         ; If this is `AquaHotkey_Backup` and no derived type, do nothing.
-        if (this.base == Object) {
+        if (this == AquaHotkey_Backup) {
             return
         }
 
@@ -95,12 +95,21 @@ class AquaHotkey_Backup {
         if (!ObjHasOwnProp(this, "Class")) {
             throw UnsetError('expected "static Class" property',, ReceiverName)
         }
-        Supplier     := this.Class
-        SupplierName := Supplier.Prototype.__Class
-        FormatString := "`n[Aqua] ######## Backup: {1} -> {2} ########`n"
 
+        ; Retrieve the target class and find its name for debug output.
+        Supplier := this.Class
+        (Object.Prototype.DeleteProp)(this, "Class")
+
+        switch {
+            case (Supplier is Class): SupplierName := Supplier.Prototype.__Class
+            case (Supplier is Func):  SupplierName := Supplier.Name
+            default:                  SupplierName := Type(Supplier)
+        }
+        FormatString := "`n[Aqua] ######## Backup: {1} -> {2} ########`n"
         OutputDebug(Format(FormatString, SupplierName, ReceiverName))
-        Transfer(this.Class, this)
+
+        ; Continue by copying all properties.
+        Transfer(Supplier, this)
 
         /**
          * Copies over all static and instance properties from

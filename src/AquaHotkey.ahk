@@ -26,7 +26,7 @@ if (A_ScriptFullPath == A_LineFile) {
  * }
  * "foo".FirstCharacter() ; "f"
  */
-class AquaHotkey
+class AquaHotkey extends AquaHotkey_Ignore
 {
 /**
  * **Overview**:
@@ -133,11 +133,7 @@ static __New() {
             return
         }
 
-        ; ignore special classes that extend `AquaHotkey_Backup`
-        ; or `AquaHotkey_Ignore`
-        if (HasBase(Supplier, AquaHotkey_Backup)) {
-            return
-        }
+        ; ignore classes that extend `AquaHotkey_Ignore`
         if (HasBase(Supplier, AquaHotkey_Ignore)) {
             return
         }
@@ -245,8 +241,8 @@ static __New() {
             try return (Supplier is Class) && (Supplier.%PropertyName% is Class)
                     && (Receiver is Class) && (Receiver.%PropertyName% is Class)
                     ; e.g. InStr("AquaHotkey.Integer", "Integer")
-                    && InStr(Supplier.%PropertyName%.Prototype.__Class,
-                             Receiver.%PropertyName%.Prototype.__Class)
+                    ; && InStr(Supplier.%PropertyName%.Prototype.__Class,
+                    ;          Receiver.%PropertyName%.Prototype.__Class)
             return false
         }
 
