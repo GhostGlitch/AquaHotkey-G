@@ -281,4 +281,5 @@ static __New() {
 } ; class AquaHotkey
 
 #Include %A_LineFile%/../Core/AquaHotkey_Backup.ahk
+#Include %A_LineFile%/../Core/AquaHotkey_MultiApply.ahk
 #Include %A_LineFile%/../Core/AquaHotkey_Ignore.ahk

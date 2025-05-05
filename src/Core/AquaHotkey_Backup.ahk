@@ -6,25 +6,45 @@
  * https://www.github.com/0w0Demonic/AquaHotkey
  * - src/Core/AquaHotkey_Backup.ahk
  * 
- * This class creates a snapshot of all properties and methods of a target
- * class before any modifications are applied. This allows for restoring or
- * referencing the original functionality when extending or modifying
- * built-in classes.
+ * The `AquaHotkey_Backup` class creates a snapshot of all properties and
+ * methods contained in one or more classes, allowing them to be safely
+ * overridden or extended later.
  * 
- * To use it, extend `AquaHotkey_Backup` and set `static Class` to the target
- * class whose properties should be preserved.
+ * To use it, create a subclass of `AquaHotkey_Backup` and call
+ * `super.__New()` within its static constructor, passing the class or classes
+ * to copy from.
+ * 
+ * 
+ * 
+ * This class extends `AquaHotkey_Ignore`, which means that it is skipped by
+ * `AquaHotkey`'s automatic class prototyping mechanism.
+ * 
+ * If you want your subclass to *actively apply* the collected methods to
+ * multiple unrelated classes, use `AquaHotkey_MultiApply` instead.
  * 
  * @example
  * 
- * class OriginalGui extends AquaHotkey_Backup {
- *     static Class => Gui
+ * class Gui_Backup extends AquaHotkey_Backup {
+ *     static __New() {
+ *         super.__New(Gui)
+ *     }
  * }
- * ; Now OriginalGui stores all original properties/methods of Gui
- * ; before modifications.
+ * 
+ * class LotsOfStuff extends AquaHotkey_Backup {
+ *     static __New() {
+ *         super.__New(MyClass, MyOtherClass, String, Array, Buffer)
+ *     }
+ * }
  */
 class AquaHotkey_Backup extends AquaHotkey_Ignore {
-    /** Static initializer. */
-    static __New() {
+    /**
+     * Static class initializer that copies properties and methods from one or
+     * more sources. An error is thrown if a subclass calls this method without
+     * passing any parameters.
+     * 
+     * @param   {Object*}  Suppliers  where to copy properties and methods from
+     */
+    static __New(Suppliers*) {
         /**
          * `Object`'s implementation of `.DefineProp()`.
          * 
@@ -87,35 +107,34 @@ class AquaHotkey_Backup extends AquaHotkey_Ignore {
             return
         }
 
-        ; Here we prepare for copying: 
-        ; "Receiver" is the class that *receives* the properties.
-        ; "Supplier" is the class that *supplies* the properties.
-        Receiver     := this
-        ReceiverName := Receiver.Prototype.__Class
-        if (!ObjHasOwnProp(this, "Class")) {
-            throw UnsetError('expected "static Class" property',, ReceiverName)
+        ; If a subclass calls this method, the parameter count must not be zero.
+        if (!Suppliers.Length) {
+            throw ValueError("No source classes provided")
         }
 
-        ; Retrieve the target class and find its name for debug output.
-        Supplier := this.Class
-        (Object.Prototype.DeleteProp)(this, "Class")
-
-        switch {
-            case (Supplier is Class): SupplierName := Supplier.Prototype.__Class
-            case (Supplier is Func):  SupplierName := Supplier.Name
-            default:                  SupplierName := Type(Supplier)
+        ; Start copying properties and methods from all specified targets.
+        Receiver := this
+        for Supplier in Suppliers {
+            Transfer(Supplier, Receiver)
         }
-        FormatString := "`n[Aqua] ######## Backup: {1} -> {2} ########`n"
-        OutputDebug(Format(FormatString, SupplierName, ReceiverName))
-
-        ; Continue by copying all properties.
-        Transfer(Supplier, this)
 
         /**
          * Copies over all static and instance properties from
          * Supplier to Receiver.
          */
         static Transfer(Supplier, Receiver) {
+            ReceiverName := Receiver.Prototype.__Class
+            switch {
+                case (Supplier is Class):
+                    SupplierName := Supplier.Prototype.__Class
+                case (Supplier is Func):
+                    SupplierName := Supplier.Name
+                default:
+                    SupplierName := Type(Supplier)
+            }
+            FormatString := "`n[Aqua] ######## Backup: {1} -> {2} ########`n"
+            OutputDebug(Format(FormatString, SupplierName, ReceiverName))
+
             ReceiverProto := Receiver.Prototype
 
             ; generate debug output
@@ -169,7 +188,9 @@ class AquaHotkey_Backup extends AquaHotkey_Ignore {
                 ; Otherwise, we will have to generate one out of thin air.
                 NestedReceiver := Class()
                 NestedReceiverProto := Object()
-                Define(NestedReceiver, "Prototype", { Value: NestedReceiverProto })
+                Define(NestedReceiver, "Prototype", {
+                    Value: NestedReceiverProto
+                })
                 
                 ; Define an appropriate `__Class`
                 if (Index := InStr(NestedSupplierName, ".")) {

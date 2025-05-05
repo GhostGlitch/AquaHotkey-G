@@ -4,7 +4,7 @@
 
 - AquaHotkey lets you extend native AutoHotkey classes like `Array`, `Gui` and
   `String` with your own methods and properties.
-- It makes most wrapper functions *obsolete*.
+- It makes most general wrapper functions *obsolete*.
 - You can write `Arr.Sum()` instead of `Array_Sum(Arr)`.
 - Just create a nested classes inside one that extends `AquaHotkey`,
   and AquaHotkey handles the rest.
@@ -26,18 +26,20 @@ Array_Sum(Arr) {
 }
 ```
 
-It works, but it's clunky. Especially because wrapper functions can accept
-any type of object, and there's no safeguard if you accidentally pass something
-unexpected (e.g., a `Map` instead of an `Array`) - the function might fail
-silently or misbahave badly. With AquaHotkey, there's *no type checking needed*,
-because methods are directly owned by the variables themselves (and because
-polymorphism is awesome).
+It works, but it's clunky.
 
 Wouldn't it be better to just write:
 
 ```ahk
 Array(1, 2, 3, 4).Sum() ; 10
 ```
+
+One reason that it is clunky is because wrapper functions can accept
+any type of object, and there's no safeguard if you accidentally pass something
+unexpected (e.g., a `Map` instead of an `Array`) - the function might fail
+silently or misbahave badly. With AquaHotkey, there's *no type checking needed*,
+because methods are directly owned by the variables themselves (and because
+polymorphism is awesome).
 
 AquaHotkey lets you *inject methods directly into native classes*, so you can
 call them like any normal method. And it **works for all possible types** and
@@ -173,69 +175,101 @@ Static variable declarations, however, work perfectly as you would expect.
 >For `Object` and `Any`, you must use an `__Init()` method with a function body.
 >Otherwise, AutoHotkey will crash from infinite recursion.
 
-## Preserving Original Behaviour
+## Preserving Original Behaviour with `AquaHotkey_Backup`
 
-### Manual Backup
+Use the `AquaHotkey_Backup` class to create a snapshot of an existing class's
+properties and methods. This lets you safely override functionality while
+retaining access to the original implementation.
 
 ```ahk
-; declaration must happen *above* the class
-Old_Gui_New := Gui.Prototype.__New
+class OriginalGui extends AquaHotkey_Backup {
+    static __New() {
+        ; Create a snapshot of the Gui class
+        super.__New(Gui)
+    }
+}
 
 class GuiExtensions extends AquaHotkey {
+    static __New() {
+        (OriginalGui) ; Force the backup class to load before applying changes
+        super.__New()
+    }
+    
     class Gui {
-        __New(Args*) {
-            Old_Gui_New(this, Args*)
-            MsgBox("Custom Gui behaviour!")
+        ; Extend the original Gui constructor
+        __New() {
+            ; Call the original constructor
+            (OriginalGui.Prototype.__New)(this, Args*)
+
+            ; add your code here
+            MsgBox("Overridden safely!")
         }
     }
 }
 ```
 
-### Automatic with `AquaHotkey_Backup`
+## Ignoring Specific Nested Classes with `AquaHotkey_Ignore`
 
-Use the `AquaHotkey_Backup` class to save a snapshot of the original.
-
-```ahk
-class OriginalGui extends AquaHotkey_Backup {
-    static Class => Gui
-}
-
-class GuiExtensions extends AquaHotkey {
-    static __New() {
-        ; force backup
-        (OriginalGui)
-    }
-    
-    class Gui {
-        (OriginalGui.Prototype.__New)(this, Args*)
-        MsgBox("Overridden safely!")
-    }
-
-    ; note: you can also define it here.
-    ; 
-    ;     class OriginalGui extends AquaHotkey_Backup { ... }
-}
-```
-
-### Ignoring Specific Nested Classes
-
-Use the special `AquaHotkey_Ignore` marker class to exclude nested classes.
-This is useful for defining helper classes inside large projects:
+Use the special `AquaHotkey_Ignore` marker class to exclude helper or
+internal-use classes from AquaHotkey's class prototyping system.
 
 ```ahk
 class MyProject extends AquaHotkey {
     class Gui {
-
+        ; visible to the prototype system
     }
 
     class Utils extends AquaHotkey_Ignore {
-        ; Will be ignored during property injection
+        ; ignored during property injection
     }
 }
 ```
 
+## Sharing Behaviour Access Multiple Classes with `AquaHotkey_MultiApply`
+
+If you want multiple unrelated classes to share behaviour without repeating
+code, use `AquaHotkey_MultiApply`. It behaves exactly like `AquaHotkey_Backup`,
+but *is not ignored* by the prototype system - making it suitable for applying
+shared functionality directly.
+
+```ahk
+class Tanuki extends AquaHotkey {
+    class Gui {
+        class CommonControls extends AquaHotkey_Ignore {
+            CommonProp() => MsgBox("Shared by Button and CheckBox!")
+        }
+
+        class Button extends AquaHotkey_MultiApply {
+            static __New() => super.__New(Tanuki.Gui.CommonControls)
+            ButtonProp() => MsgBox("I'm a Button!")
+        }
+
+        class CheckBox extends AquaHotkey_MultiApply {
+            static __New() => super.__New(Tanuki.Gui.CommonControls)
+            CheckBoxProp() => MsgBox("I'm a CheckBox!")
+        }
+    }
+}
+```
+
+This lets you write shared behaviour once, and inject it into multiple
+components cleanly.
+
+## Class Hierarchy
+
+```txt
+Object
+|- AquaHotkey_Ignore
+|  |- AquaHotkey
+|  `- AquaHotkey_Backup
+|
+`- AquaHotkey_MultiApply // exactly like `AquaHotkey_Backup`, but not ignored
+```
+
 ## Quick Summary
 
-- Add methods by defining nested classes such as `class Array`.
-- `AquaHotkey_Backup` preserves existing methods before overriding.
-- `AquaHotkey_Ignore` skips certain nested classes during injection.
+- Add behaviour by defining nested classes such as `ArrayExtension.Array`.
+- `AquaHotkey_Backup` snapshots a class for safe method overriding.
+- `AquaHotkey_MultiApply` copies properties from multiple classes and applies
+  them directly to a target class.
+- `AquaHotkey_Ignore` marks classes to skip during property injection.
