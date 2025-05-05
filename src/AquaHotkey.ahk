@@ -103,21 +103,6 @@ static __New() {
     static DeletionQueue := Array()
 
     /**
-     * This method gets rid of special class properties from property suppliers,
-     * namely `__Init()`, `__Class` and `Prototype`.
-     * 
-     * @param   {Class}  ClassObj  property supplier to delete properties from
-     */
-    static DiscardProperties(ClassObj) {
-        static Props := ["__Init", "__Class", "Prototype"]
-        Proto := ClassObj.Prototype
-        for PropertyName in Props {
-            Delete(ClassObj, PropertyName)
-            Delete(Proto,    PropertyName)
-        }
-    }
-
-    /**
      * Main method responsible for transferring properties.
      * 
      * @param   {Class}   RootClass      class that encloses property supplier
@@ -231,16 +216,19 @@ static __New() {
         }
 
         ; Get rid of properties `__Init`, `__Class` and `Prototype` in the
-        ; user-defined class before transferring properties
-        DiscardProperties(Supplier)
+        ; user-defined class before transferring properties.
+        Delete(Supplier,      "Prototype")
+        Delete(Supplier,      "__Init")
+        Delete(SupplierProto, "__Init")
+        Delete(SupplierProto, "__Class")
 
-        ; Checks if the property is a nested class that should be recursed into,
+        ; Checks if the property is a nested class that should be recursed into.
         ; e.g. `AquaHotkey.Gui`              | `Gui`
         ;       `--> `AquaHotkey.Gui.Button` |  `--> `Gui.Button`
         static DoRecursion(Supplier, Receiver, PropertyName) {
             try return (Supplier is Class) && (Supplier.%PropertyName% is Class)
                     && (Receiver is Class) && (Receiver.%PropertyName% is Class)
-                    ; e.g. InStr("AquaHotkey.Integer", "Integer")
+                    /** e.g. InStr("AquaHotkey.Integer", "Integer") */
                     ; && InStr(Supplier.%PropertyName%.Prototype.__Class,
                     ;          Receiver.%PropertyName%.Prototype.__Class)
             return false

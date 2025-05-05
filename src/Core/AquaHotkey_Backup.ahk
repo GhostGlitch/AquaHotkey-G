@@ -14,8 +14,6 @@
  * `super.__New()` within its static constructor, passing the class or classes
  * to copy from.
  * 
- * 
- * 
  * This class extends `AquaHotkey_Ignore`, which means that it is skipped by
  * `AquaHotkey`'s automatic class prototyping mechanism.
  * 
@@ -38,6 +36,17 @@
  */
 class AquaHotkey_Backup extends AquaHotkey_Ignore {
     /**
+     * Copies all properties from the supplied classes into the receiver class.
+     * Useful for manual application in advanced scenarios or edge cases.
+     * 
+     * @param   {Class}    Receiver   class to copy properties into
+     * @param   {Object*}  Suppliers  one or more classes to copy from
+     */
+    static Call(Receiver, Suppliers*) {
+        (this.__New)(Receiver, Suppliers*)
+    }
+
+    /**
      * Static class initializer that copies properties and methods from one or
      * more sources. An error is thrown if a subclass calls this method without
      * passing any parameters.
@@ -53,7 +62,22 @@ class AquaHotkey_Backup extends AquaHotkey_Ignore {
          * @param   {Object}  PropertyDesc  property descriptor
          */
         static Define(Obj, PropertyName, PropertyDesc) {
+            ; Very strange edge case: defining an empty property does not
+            ; throw an error, but is an invalid argument for `.DefineProp()`.
+            if (!ObjOwnPropCount(PropertyDesc)) {
+                return
+            }
             (Object.Prototype.DefineProp)(Obj, PropertyName, PropertyDesc)
+        }
+
+        /**
+         * `Object`'s implementation of `DeleteProp()`.
+         * 
+         * @param   {Object}  Obj           object to delete property from
+         * @param   {String}  PropertyName  name of property
+         */
+        static Delete(Obj, PropertyName) {
+            (Object.Prototype.DeleteProp)(Obj, PropertyName)
         }
 
         /**
@@ -102,22 +126,6 @@ class AquaHotkey_Backup extends AquaHotkey_Ignore {
             }
         }
 
-        ; If this is `AquaHotkey_Backup` and no derived type, do nothing.
-        if (this == AquaHotkey_Backup) {
-            return
-        }
-
-        ; If a subclass calls this method, the parameter count must not be zero.
-        if (!Suppliers.Length) {
-            throw ValueError("No source classes provided")
-        }
-
-        ; Start copying properties and methods from all specified targets.
-        Receiver := this
-        for Supplier in Suppliers {
-            Transfer(Supplier, Receiver)
-        }
-
         /**
          * Copies over all static and instance properties from
          * Supplier to Receiver.
@@ -132,7 +140,7 @@ class AquaHotkey_Backup extends AquaHotkey_Ignore {
                 default:
                     SupplierName := Type(Supplier)
             }
-            FormatString := "`n[Aqua] ######## Backup: {1} -> {2} ########`n"
+            FormatString := "`n[Aqua] ######## {1} -> {2} ########`n"
             OutputDebug(Format(FormatString, SupplierName, ReceiverName))
 
             ReceiverProto := Receiver.Prototype
@@ -151,6 +159,40 @@ class AquaHotkey_Backup extends AquaHotkey_Ignore {
             }
             FormatString := "[Aqua] {1:-40} -> {2}"
             OutputDebug(Format(FormatString, SupplierName, ReceiverName))
+
+            ; Redefine `__Init()` method (which does instance variable
+            ; declarations) to call both the previous method and then the
+            ; `__Init()` method of the property supplier.
+            ReceiverInit := ReceiverProto.__Init
+            SupplierInit := SupplierProto.__Init
+
+            /**
+             * The new `__Init()` method used during object construction. This
+             * method first calls the previously defined `__Init()`, followed by
+             * the new `__Init()` which was defined in the property supplier.
+             */
+            __Init(Instance) {
+                ReceiverInit(Instance) ; previously defined `__Init()`
+                SupplierInit(Instance) ; user-defined `__Init()`
+            }
+
+            ; Check whether the receiver is a primitive class, in which case
+            ; defining a new `__Init()` would have no effect as primitive types
+            ; cannot own any properties.
+            if (!HasBase(Receiver, Primitive)) {
+                ; Rename the new `__Init()` method to something useful
+                InitMethodName := SupplierProto.__Class . ".Prototype.__Init"
+                Define(__Init, "Name", { Get: (Instance) => InitMethodName })
+
+                ; Finally, overwrite the old `__Init()` property with ours
+                Define(ReceiverProto, "__Init", { Call: __Init })
+            }
+
+            ; Get rid of properties `__Init` and `__Class` in the user-defined
+            ; class before transferring properties.
+            Delete(Supplier,      "__Init")
+            Delete(SupplierProto, "__Init")
+            Delete(SupplierProto, "__Class")
 
             ; Copy all static properties
             for PropertyName in ObjOwnProps(Supplier) {
@@ -198,11 +240,11 @@ class AquaHotkey_Backup extends AquaHotkey_Ignore {
                 }
                 NestedReceiverName := ReceiverName . "." . NestedSupplierName
                 Define(NestedReceiver, "__Class",
-                       CreateGetter(NestedReceiverName))
+                        CreateGetter(NestedReceiverName))
                 
                 ; Hook up new nested class to receiver
                 Define(Receiver, PropertyName,
-                       CreateNestedClassProp(NestedReceiver))
+                        CreateNestedClassProp(NestedReceiver))
                 
                 ; Keep going recursively into the new classes
                 Transfer(NestedSupplier, NestedReceiver)
@@ -214,5 +256,21 @@ class AquaHotkey_Backup extends AquaHotkey_Ignore {
                 Define(ReceiverProto, PropertyName, PropDesc)
             }
         }
-    }
-}
+
+        ; If this is `AquaHotkey_Backup` and no derived type, do nothing.
+        if (this == AquaHotkey_Backup) {
+            return
+        }
+
+        ; If a subclass calls this method, the parameter count must not be zero.
+        if (!Suppliers.Length) {
+            throw ValueError("No source classes provided")
+        }
+
+        ; Start copying properties and methods from all specified targets.
+        Receiver := this
+        for Supplier in Suppliers {
+            Transfer(Supplier, Receiver)
+        }
+    } ; static __New()
+} ; class AquaHotkey_Backup

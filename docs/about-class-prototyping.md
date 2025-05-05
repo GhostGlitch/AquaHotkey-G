@@ -228,24 +228,23 @@ class MyProject extends AquaHotkey {
 ## Sharing Behaviour Access Multiple Classes with `AquaHotkey_MultiApply`
 
 If you want multiple unrelated classes to share behaviour without repeating
-code, use `AquaHotkey_MultiApply`. It behaves exactly like `AquaHotkey_Backup`,
-but *is not ignored* by the prototype system - making it suitable for applying
-shared functionality directly.
+code, use `AquaHotkey_MultiApply`.
 
 ```ahk
 class Tanuki extends AquaHotkey {
     class Gui {
-        class CommonControls extends AquaHotkey_Ignore {
+        class CommonControls extends AquaHotkey_MultiApply {
+            static __New() {
+                super.__New(Tanuki.Gui.Button, Tanuki.Gui.CheckBox)
+            }
             CommonProp() => MsgBox("Shared by Button and CheckBox!")
         }
 
-        class Button extends AquaHotkey_MultiApply {
-            static __New() => super.__New(Tanuki.Gui.CommonControls)
+        class Button {
             ButtonProp() => MsgBox("I'm a Button!")
         }
 
-        class CheckBox extends AquaHotkey_MultiApply {
-            static __New() => super.__New(Tanuki.Gui.CommonControls)
+        class CheckBox {
             CheckBoxProp() => MsgBox("I'm a CheckBox!")
         }
     }
@@ -259,17 +258,15 @@ components cleanly.
 
 ```txt
 Object
-|- AquaHotkey_Ignore
-|  |- AquaHotkey
-|  `- AquaHotkey_Backup
-|
-`- AquaHotkey_MultiApply // exactly like `AquaHotkey_Backup`, but not ignored
+`- AquaHotkey_Ignore
+   |- AquaHotkey
+   |- AquaHotkey_Backup
+   `- AquaHotkey_MultiApply
 ```
 
 ## Quick Summary
 
 - Add behaviour by defining nested classes such as `ArrayExtension.Array`.
 - `AquaHotkey_Backup` snapshots a class for safe method overriding.
-- `AquaHotkey_MultiApply` copies properties from multiple classes and applies
-  them directly to a target class.
+- `AquaHotkey_MultiApply` copies properties directly into multiple classes.
 - `AquaHotkey_Ignore` marks classes to skip during property injection.

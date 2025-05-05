@@ -6,8 +6,8 @@
  * https://www.github.com/0w0Demonic/AquaHotkey
  * - src/Core/AquaHotkey_MultiApply.ahk
  * 
- * `AquaHotkey_MultiApply` allow you to collect properties and methods from
- * one or more sources and actively apply them to your target class.
+ * `AquaHotkey_MultiApply` is a special class that allows you to copy its
+ * contents into multiple specified target classes.
  * 
  * This is especially useful when multiple unrelated classes (like `Gui.Button`
  * and `Gui.CheckBox`) should share a common set of methods or properties
@@ -15,67 +15,76 @@
  * 
  * To use this class, create a subclass of `AquaHotkey_MultiApply` and call
  * `super.__New()` within the static constructor, passing the class(es)
- * you want to copy from.
- * 
- * `AquaHotkey_MultiApply` is functionally identical to `AquaHotkey_Backup`,
- * except that it *is not* ignored by `AquaHotkey`'s class system.
- * If you want your subclass to be skipped during prototyping, use
- * `AquaHotkey_Backup` instead.
+ * you want to copy into.
  * 
  * @example
  * 
  * class Tanuki extends AquaHotkey {
  *     class Gui {
- *         class Button extends AquaHotkey_MultiApply {
- *             static __New() => super.__New(Tanuki.Gui.ButtonControlsCommon)
- *             
+ *         class Button {
  *             ButtonProp() => MsgBox("I'm a Button!")
  *         }
  * 
- *         class ButtonControlsCommon extends AquaHotkey_Ignore {
+ *         class ButtonControlsCommon extends AquaHotkey_MultiApply {
+ *             static __New() {
+ *                 super.__New(Tanuki.Gui.Button, Tanuki.Gui.CheckBox)
+ *             }
+ * 
  *             CommonProp() => MsgBox("I'm a CheckBox or a Button!")
  *         }
  * 
- *         class CheckBox extends AquaHotkey_MultiApply {
- *             static __New() => super.__New(Tanuki.Gui.ButtonControlsCommon)
- * 
+ *         class CheckBox {
  *             CheckBoxProp() => MsgBox("I'm a CheckBox!")
  *         }
  *     }
  * }
  */
-class AquaHotkey_MultiApply {
+class AquaHotkey_MultiApply extends AquaHotkey_Ignore {
     /**
-     * Static class initializer that copies properties and methods from one or
-     * more sources. An error is thrown if a subclass calls this method without
-     * passing any parameters.
+     * Applies the properties of the `Supplier` class to the given target(s).
+     * Useful for manual application in advanced scenarios or edge cases.
+     * 
+     * @param   {Class}    Supplier   the class to copy from
+     * @param   {Object*}  Receivers  one or more classes that are copied into
+     */
+    static Call(Supplier, Receivers*) {
+        (this.__New)(Supplier, Receivers*)
+    }
+
+    /**
+     * Static class initializer that copies properties and methods into one or
+     * many destination classes. An error is thrown if a subclass calls this
+     * method without passing any parameters.
      * 
      * @example
      * 
      * ; class Tanuki extends AquaHotkey {
      * ; class Gui {
-     * 
-     * class Button extends AquaHotkey_MultiApply {
+     * class CommonButtonControls extends AquaHotkey_MultiApply {
      *     static __New() {
      *         ; specify one or more sources to copy from
-     *         super.__New(Tanuki.Gui.ButtonControlsCommon)
+     *         super.__New(Tanuki.Gui.Button, Tanuki.Gui.ComboBox)
      *     }
      * }
-     * class ButtonControlsCommon extends AquaHotkey_Ignore { ... }
-     * 
+     * class Button   { ... }
+     * class ComboBox { ... }
      * ; }
      * ; }
      * 
-     * @param   {Object*}  Suppliers  where to copy properties and methods from
+     * @param   {Object*}  Targets  where to copy properties and methods into
      */
-    static __New(Suppliers*) {
+    static __New(Targets*) {
         if (this == AquaHotkey_MultiApply) {
             return
         }
+        if (!Targets.Length) {
+            throw ValueError("No target class provided")
+        }
 
-        ; Use the same method as `AquaHotkey_Backup` - The only difference
-        ; being that this class does not extend `AquaHotkey_Ignore` and is
-        ; not ignored.
-        (AquaHotkey_Backup.__New)(this, Suppliers*)
+        ; Use the same method as `AquaHotkey_Backup`, but with the parameters
+        ; swapped around.
+        for Target in Targets {
+            (AquaHotkey_Backup.__New)(Target, this)
+        }
     }
 }
