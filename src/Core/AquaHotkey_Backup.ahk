@@ -36,17 +36,6 @@
  */
 class AquaHotkey_Backup extends AquaHotkey_Ignore {
     /**
-     * Copies all properties from the supplied classes into the receiver class.
-     * Useful for manual application in advanced scenarios or edge cases.
-     * 
-     * @param   {Class}    Receiver   class to copy properties into
-     * @param   {Object*}  Suppliers  one or more classes to copy from
-     */
-    static Call(Receiver, Suppliers*) {
-        (this.__New)(Receiver, Suppliers*)
-    }
-
-    /**
      * Static class initializer that copies properties and methods from one or
      * more sources. An error is thrown if a subclass calls this method without
      * passing any parameters.
@@ -188,11 +177,9 @@ class AquaHotkey_Backup extends AquaHotkey_Ignore {
                 Define(ReceiverProto, "__Init", { Call: __Init })
             }
 
-            ; Get rid of properties `__Init` and `__Class` in the user-defined
-            ; class before transferring properties.
+            ; Get rid of `__Init()` properties before copying.
             Delete(Supplier,      "__Init")
             Delete(SupplierProto, "__Init")
-            Delete(SupplierProto, "__Class")
 
             ; Copy all static properties
             for PropertyName in ObjOwnProps(Supplier) {
@@ -252,6 +239,10 @@ class AquaHotkey_Backup extends AquaHotkey_Ignore {
 
             ; Copy all non-static properties
             for PropertyName in ObjOwnProps(SupplierProto) {
+                ; don't remove `__Class` - only skip it
+                if (PropertyName = "__Class") {
+                    continue
+                }
                 PropDesc := GetPropDesc(SupplierProto, PropertyName)
                 Define(ReceiverProto, PropertyName, PropDesc)
             }

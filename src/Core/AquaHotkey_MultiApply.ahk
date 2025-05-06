@@ -41,17 +41,6 @@
  */
 class AquaHotkey_MultiApply extends AquaHotkey_Ignore {
     /**
-     * Applies the properties of the `Supplier` class to the given target(s).
-     * Useful for manual application in advanced scenarios or edge cases.
-     * 
-     * @param   {Class}    Supplier   the class to copy from
-     * @param   {Object*}  Receivers  one or more classes that are copied into
-     */
-    static Call(Supplier, Receivers*) {
-        (this.__New)(Supplier, Receivers*)
-    }
-
-    /**
      * Static class initializer that copies properties and methods into one or
      * many destination classes. An error is thrown if a subclass calls this
      * method without passing any parameters.
