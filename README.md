@@ -41,7 +41,7 @@ MsgBox(Arr.IsEmpty) ; true
 
 - **Modular Extension Packages**:
 
-  Organize your extensions into mofule classes and `#Include` them when needed.
+  Organize your extensions into module classes and `#Include` them when needed.
 
 - **Polished Built-In Extensions**:
 
@@ -77,9 +77,9 @@ Consider placing the repository into your user library path
 Alongside the core `AquaHotkey`, the library also provides `AquaHotkeyX` - a
 complete, modular extension library built on top of it.
 
-`AquaHotkeyX` gives you batteries-included enhancements most of the built-in
-types, and more. It explores some very interesting patterns made possible by
-class prototyping, especially **long method chains** and **fluent APIs**
+`AquaHotkeyX` gives you batteries-included enhancements for most of the built-in
+types, and much more. It explores some very interesting patterns made possible
+by class prototyping, especially **long method chains** and **fluent APIs**
 inspired by functional programming.
 
 ```ahk
@@ -99,12 +99,8 @@ If you prefer a lighter setup, you can selectively include specific modules:
 #Include %A_ScriptDir% ; change back the "working directory"
 ```
 
-**Note**:
-
-Some modules will auto-import their required dependencies (e.g., `Array.ahk`
-requires `Any.ahk` and `Comparator.ahk` to be present in the script) to ensure
-everything "just works". Most of the time, modules will only require `Any.ahk`
-and nothing else.
+The modules inside the standard library have no mutual dependancies, that makes
+it relatively easy to pick what features you want to have in your script.
 
 ### How to extend types
 
@@ -176,11 +172,12 @@ MsgBox.Info("Hello, world!")
 
 ### Modular Packages
 
-Split your extensions into separate, reusable class files:
+One of the most elegant ways to get the most out of this library is to split
+your extensions into separate, reusable class files:
 
 ```ahk
-#Include StringExtensions.ahk
-#Include GuiExtensions.ahk
+#Include MyStringExtensions.ahk
+#Include MyGuiExtensions.ahk
 ```
 
 ## List of Features
@@ -226,11 +223,11 @@ in v2.1-alpha.3:
 MyArray := [13, 12, 3, -4, 2]
 
 Result := MyArray.Stream().RetainIf(
-    (Num) {
+    IsGreaterThan10(Num) {
         return (Num > 10)
     }
 ).Map(
-    Num() {
+    Squared(Num) {
         return (Num * Num)
     }
 ).Sum()
@@ -252,15 +249,15 @@ Optional("Hello world!")
 ```ahk
 #Requires AutoHotkey >=v2.1-alpha.3
 Optional("Hello, world!").RetainIf(
-    (Str) {
+    ContainsLetterH(Str) {
         return InStr(Str, "H")
     }
 ).IfPresent(
-    (Str) {
+    Message(Str) {
         MsgBox(Str)
     }
 ).IfAbsent(
-    () {
+    ThrowError() {
         throw ValueError("no value present!")
     }
 )
@@ -277,7 +274,7 @@ class CStdLib extends DLL {
     static TypeSignatures => {
         sqrtf:  "Float, Float",
         malloc: ["UPtr", "Ptr"],
-        foo:    [917, "Int", "UInt"] ; ordinal 917
+        foo:    [117, "Int", "UInt"] ; ordinal 117
     }
 }
 CStdLib.sqrtf(9.0) ; 3.0
