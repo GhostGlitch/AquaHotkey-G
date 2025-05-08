@@ -95,3 +95,5 @@ class Reflection extends AquaHotkey {
         }
     }
 }
+
+ExitApp()
