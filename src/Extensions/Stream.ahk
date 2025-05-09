@@ -1467,7 +1467,6 @@ class Stream {
      * @param   {Func}    Supplier   function that supplies stream elements
      * @return  {Stream}
      */
-
     static Generate(Supplier) {
         if (!HasMethod(Supplier)) {
             throw TypeError("Expected a Function object",, Type(Supplier))
