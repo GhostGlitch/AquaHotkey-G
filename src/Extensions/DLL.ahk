@@ -112,14 +112,11 @@
 class DLL {
     /** Constructor that throws an error. */
     static Call(*) {
+        if (ObjGetBase(this) != DLL) {
+            return
+        }
         throw ValueError("this class is not instantiable",,
-                         this.Prototype.__Class)
-    }
-
-    /** Constructor that throws an error. */
-    __New(*) {
-        throw ValueError("this class is not instantiable",,
-                         Type(this))
+                        this.Prototype.__Class)
     }
 
     /**
@@ -263,9 +260,12 @@ class DLL {
             TypeSignatures := Object()
         }
 
-        hModule := LoadLibrary(this)
-        DeleteAllProperties(this)
-        this.DefineProp("Ptr", { Get: (Instance) => hModule })
+        if (ObjGetBase(this) == DLL) {
+            hModule := LoadLibrary(this)
+            DeleteAllProperties(this)
+            this.DefineProp("Ptr", { Get: (Instance) => hModule })
+        }
+
         LoadProperties(this, TypeSignatures)
     }
 
