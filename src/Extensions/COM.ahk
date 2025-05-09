@@ -351,9 +351,11 @@ class COM {
 
 
     /**
-     * `EventSink` is used for handling events that the COM object throws.
+     * `COM.EventSink` is a class used for handling events that the COM
+     * object throws.
      * 
-     * The `this`-keyword refers to the instance of `COM` raised the event.
+     * Events are handled in such a way that the `this`-keyword refers
+     * to the instance of `COM` which raised the event, not the event sink.
      * This allows very easy managing of the COM object.
      * 
      * Because of this, the last parameter thrown by the COM object normally
