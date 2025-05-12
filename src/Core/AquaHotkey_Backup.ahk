@@ -115,76 +115,115 @@ class AquaHotkey_Backup extends AquaHotkey_Ignore {
             }
         }
 
+        /** Creates a method in which `Caller` is the calling object. */
+        static CreateForwardingMethod(Callback, Caller) {
+            return (Instance, Args*) => Callback(Caller, Args*)
+        }
+        
         /**
          * Copies over all static and instance properties from
          * Supplier to Receiver.
          */
         static Transfer(Supplier, Receiver) {
-            ReceiverName := Receiver.Prototype.__Class
-            switch {
-                case (Supplier is Class):
-                    SupplierName := Supplier.Prototype.__Class
-                case (Supplier is Func):
-                    SupplierName := Supplier.Name
-                default:
-                    SupplierName := Type(Supplier)
-            }
+            ; find protoype and name of property supplier
             FormatString := "`n[Aqua] ######## {1} -> {2} ########`n"
-            OutputDebug(Format(FormatString, SupplierName, ReceiverName))
-
-            ReceiverProto := Receiver.Prototype
-
-            ; generate debug output
-            ReceiverName  := ReceiverProto.__Class
             switch {
                 case (Supplier is Class):
                     SupplierProto := Supplier.Prototype
-                    SupplierName  := SupplierProto.__Class
+                    SupplierName  := Supplier.Prototype.__Class
                 case (Supplier is Func):
                     SupplierProto := Supplier
                     SupplierName  := Supplier.Name
                 default:
-                    throw TypeError("unexpected type")
+                    throw TypeError("Unexpected type",, Type(Supplier))
             }
-            FormatString := "[Aqua] {1:-40} -> {2}"
+
+            ; find prototype and name of property receiver
+            switch {
+                case (Receiver is Class):
+                    ReceiverProto := Receiver.Prototype
+                    ReceiverName  := Receiver.Prototype.__Class
+                case (Receiver is Func):
+                    ReceiverProto := Receiver
+                    ReceiverName  := Receiver.Name
+                default:
+                    throw TypeError("Unexpected type",, Type(Receiver))
+            }
+
+            ; debugger output
             OutputDebug(Format(FormatString, SupplierName, ReceiverName))
 
-            ; Redefine `__Init()` method (which does instance variable
-            ; declarations) to call both the previous method and then the
-            ; `__Init()` method of the property supplier.
-            ReceiverInit := ReceiverProto.__Init
-            SupplierInit := SupplierProto.__Init
+            ; If appropriate, we redefine the `__Init()` method which is
+            ; responsible for declaring new instance variables.
+            ; 
+            ; In this case, the object is initialized with declarations of
+            ; both the supplier and receiver class. This only applies to
+            ; subclasses of `AquaHotkey_MultiApply`, if both supplier and
+            ; receiver are classes, and if the receiving class is not based on
+            ; `Primitive` (these are not allowed to have instance variables).
+            if ((Supplier is Class) && (Receiver is Class)
+                        && !(HasBase(Receiver, Primitive)))
+            {
+                ReceiverInit := ReceiverProto.__Init
+                SupplierInit := SupplierProto.__Init
 
-            /**
-             * The new `__Init()` method used during object construction. This
-             * method first calls the previously defined `__Init()`, followed by
-             * the new `__Init()` which was defined in the property supplier.
-             */
-            __Init(Instance) {
-                ReceiverInit(Instance) ; previously defined `__Init()`
-                SupplierInit(Instance) ; user-defined `__Init()`
-            }
+                __Init(Instance) {
+                    ReceiverInit(Instance) ; previously defined `__Init()`
+                    SupplierInit(Instance) ; user-defined `__Init()`
+                }
 
-            ; Check whether the receiver is a primitive class, in which case
-            ; defining a new `__Init()` would have no effect as primitive types
-            ; cannot own any properties.
-            if (!HasBase(Receiver, Primitive)) {
                 ; Rename the new `__Init()` method to something useful
                 InitMethodName := SupplierProto.__Class . ".Prototype.__Init"
                 Define(__Init, "Name", { Get: (Instance) => InitMethodName })
 
                 ; Finally, overwrite the old `__Init()` property with ours
                 Define(ReceiverProto, "__Init", { Call: __Init })
+
+                ; Get rid of `__Init()` properties before copying.
+                Delete(Supplier,      "__Init")
+                Delete(SupplierProto, "__Init")
             }
 
-            ; Get rid of `__Init()` properties before copying.
-            Delete(Supplier,      "__Init")
-            Delete(SupplierProto, "__Init")
+            ; If supplier is a function, we must create special methods and
+            ; getter properties that forward their arguments and return value
+            ; to whatever `Supplier.<some property>()` returns.
+            if (Supplier is Func) {
+                Caller := Supplier
+
+                for PropertyName in ObjOwnProps(Func.Prototype) {
+                    FuncProp := GetPropDesc(Func.Prototype, PropertyName)
+                    if (ObjHasOwnProp(FuncProp, "Call")) {
+                        if (!FuncProp.Call.IsBuiltIn) {
+                            continue
+                        }
+                        Define(Receiver, PropertyName, {
+                            Call: CreateForwardingMethod(FuncProp.Call, Caller)
+                        })
+                    } else if (ObjHasOwnProp(FuncProp, "Get")) {
+                        if (!FuncProp.Get.IsBuiltIn) {
+                            continue
+                        }
+                        Define(Receiver, PropertyName, {
+                            Get: CreateForwardingMethod(FuncProp.Get, Caller)
+                        })
+                    }
+                }
+            }
+
+            ; Copy all non-static properties
+            for PropertyName in ObjOwnProps(SupplierProto) {
+                ; don't remove `__Class` - only skip it
+                if ((Supplier is Class) && PropertyName = "__Class") {
+                    continue
+                }
+                PropDesc := GetPropDesc(SupplierProto, PropertyName)
+                Define(ReceiverProto, PropertyName, PropDesc)
+            }
 
             ; Copy all static properties
             for PropertyName in ObjOwnProps(Supplier) {
                 ; Very important - SKIP PROTOTYPE!
-                if (PropertyName = "Prototype") {
+                if ((Supplier is Class) && (PropertyName = "Prototype")) {
                     continue
                 }
 
@@ -202,7 +241,7 @@ class AquaHotkey_Backup extends AquaHotkey_Ignore {
                     continue
                 }
 
-                ; Otherwise, we will have to recurse. 
+                ; Otherwise, we will have to recurse.
                 NestedSupplier := Supplier.%PropertyName%
                 NestedSupplierName := NestedSupplier.Prototype.__Class
                 
@@ -235,16 +274,6 @@ class AquaHotkey_Backup extends AquaHotkey_Ignore {
                 
                 ; Keep going recursively into the new classes
                 Transfer(NestedSupplier, NestedReceiver)
-            }
-
-            ; Copy all non-static properties
-            for PropertyName in ObjOwnProps(SupplierProto) {
-                ; don't remove `__Class` - only skip it
-                if (PropertyName = "__Class") {
-                    continue
-                }
-                PropDesc := GetPropDesc(SupplierProto, PropertyName)
-                Define(ReceiverProto, PropertyName, PropDesc)
             }
         }
 
