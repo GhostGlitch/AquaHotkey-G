@@ -1352,12 +1352,11 @@ class Stream {
      * A particularly flexible way of capturing multiple parameters is by using
      * `.Map(Array)`:
      * 
-     * ```
+     * @example
+     * 
      * ; <[1, "foo"], [2, "bar"], [3, "baz"]>
      * Array("foo", "bar", "baz").Stream(2).Map(Array)
-     * ```
      * 
-     * ---
      * @example
      * 
      * Product(a, b) {
@@ -1446,13 +1445,72 @@ class Stream {
      * ; 1
      * ; 2
      * ; 3
-     * Array(1, 2, 3).JoinLine()
+     * Array(1, 2, 3).Stream().JoinLine()
      * 
      * @param   {Integer?}  InitialCap  initial string capacity
      * @return  {String}
      */
     JoinLine(InitialCap := 0) {
         return this.Join("`n", InitialCap)
+    }
+
+    /**
+     * Creates an infinite stream where each element is produced by the
+     * given supplier function.
+     * 
+     * The stream is infinite unless filtered or limited with other methods.
+     * 
+     * @example
+     * ; <4, 6, 1, 8, 2, 7>
+     * Stream.Generate(() => Random(0, 9)).Limit(6).ToArray()
+     * 
+     * @param   {Func}    Supplier   function that supplies stream elements
+     * @return  {Stream}
+     */
+    static Generate(Supplier) {
+        if (!HasMethod(Supplier)) {
+            throw TypeError("Expected a Function object",, Type(Supplier))
+        }
+        return Stream(Generate)
+
+        Generate(&Out) {
+            Out := Supplier()
+            return true
+        }
+    }
+
+    /**
+     * Creates a stream where each element is the result of applying `Mapper`
+     * to the previous one, starting from `Seed`.
+     * 
+     * The stream is infinite unless filtered or limited with other methods.
+     * 
+     * @example
+     * ; <0, 2, 4, 6, 8, 10>
+     * Stream.Iterate(0, x => (x + 2)).Take(6).ToArray()
+     * 
+     * @param   {Any}   Seed    the starting value
+     * @param   {Func}  Mapper  a function that computes the next value
+     * @return  {Stream}
+     */
+    static Iterate(Seed, Mapper) {
+        if (!HasMethod(Mapper)) {
+            throw TypeError("Expected a Function object",, Type(Mapper))
+        }
+        First := true
+        Value := unset
+        return Stream(Iterate)
+
+        Iterate(&Out) {
+            if (First) {
+                Value := Seed
+                First := false
+            } else {
+                Value := Mapper(Value)
+            }
+            Out := Value
+            return true
+        }
     }
 }
 

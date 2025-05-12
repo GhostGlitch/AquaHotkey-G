@@ -274,4 +274,12 @@ class Stream {
             .Reduce((a, b) => (a + b))
             .AssertEquals(15)
     }
+
+    static Generate() {
+        Stream.Generate(() => 1).Limit(5).Join().AssertEquals("11111")
+    }
+
+    static Iterate() {
+        Stream.Iterate(1, (x) => x + 1).Limit(5).Join().AssertEquals("12345")
+    }
 }
