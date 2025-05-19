@@ -120,6 +120,7 @@ static __New() {
 
         ; ignore classes that extend `AquaHotkey_Ignore`
         if (HasBase(Supplier, AquaHotkey_Ignore)) {
+            OutputDebug("[Aqua] ignoring: " . Supplier.Prototype.__Class)
             return
         }
         

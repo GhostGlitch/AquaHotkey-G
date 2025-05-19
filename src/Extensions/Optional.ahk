@@ -267,14 +267,16 @@ class Optional {
 }
 
 class AquaHotkey_Optional extends AquaHotkey {
-    /**
-     * Returns an `Optional` that wraps around this variable.
-     * @see `Optional`
-     * @example
-     * 
-     * "Hello world!".Optional().IfPresent(MsgBox)
-     * 
-     * @return  {Optional}
-     */
-    Optional() => Optional(this)
+    class Any {
+        /**
+         * Returns an `Optional` that wraps around this variable.
+         * @see `Optional`
+         * @example
+         * 
+         * "Hello world!".Optional().IfPresent(MsgBox)
+         * 
+         * @return  {Optional}
+         */
+        Optional() => Optional(this)
+    }
 }
