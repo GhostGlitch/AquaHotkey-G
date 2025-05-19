@@ -216,8 +216,8 @@ static __New() {
             Define(ReceiverProto, "__Init", { Call: __Init })
         }
 
-        ; Get rid of properties `__Init`, `__Class` and `Prototype` in the
-        ; user-defined class before transferring properties.
+        ; Remove special properties in the supplier class before starting to
+        ; transfer properties.
         Delete(Supplier,      "Prototype")
         Delete(Supplier,      "__Init")
         Delete(SupplierProto, "__Init")
@@ -237,6 +237,9 @@ static __New() {
 
         ; Transfer all static properties
         for PropertyName in ObjOwnProps(Supplier) {
+            if (PropertyName = "__New") {
+                continue
+            }
             if (DoRecursion(Supplier, Receiver, PropertyName)) {
                 Overwrite(Supplier, PropertyName, DeletionQueue, Receiver)
             } else {
