@@ -1,10 +1,11 @@
 class AquaHotkey_String extends AquaHotkey {
 /**
- * AquaHotkey - String.ahk
+ * AquaHotkey-G - String.ahk
  * 
- * Author: 0w0Demonic
+ * OriginalAuthor: 0w0Demonic
+ * Author: GhostGlitch
  * 
- * https://www.github.com/0w0Demonic/AquaHotkey
+ * https://www.github.com/GhostGlitch/AquaHotkey-G
  * - src/Builtins/String.ahk
  */
 class String {
@@ -14,7 +15,7 @@ class String {
      * @return  {Boolean}
      */
     IsDigit  => IsDigit(this)
-    IsXDigit => IsXDigit(this)
+    IsHexit => IsXDigit(this)
     IsAlpha  => IsAlpha(this)
     IsUpper  => IsUpper(this)
     IsLower  => IsLower(this)
@@ -819,7 +820,7 @@ class String {
      * 
      * @return  {String}
      */
-    StrLower() => StrLower(this)
+    Lower() => StrLower(this)
     ToLower()  => StrLower(this)
 
     /**
@@ -830,18 +831,18 @@ class String {
      * 
      * @return  {String}
      */
-    StrUpper() => StrUpper(this)
+    Upper() => StrUpper(this)
     ToUpper()  => StrUpper(this)
 
     /**
      * Converts this string to title case.
      * @example
      * 
-     * "foo".ToTitle() ; "Foo"
+     * "foo".Title() ; "Foo"
      * 
      * @return  {String}
      */
-    StrTitle() => StrTitle(this)
+    Title() => StrTitle(this)
     ToTitle()  => StrTitle(this)
 
     /**
@@ -857,9 +858,6 @@ class String {
      * @param   {Integer?}    Limit      maximum number of replacements
      * @return  {String}
      */
-    StrReplace(Pattern, Rep := "", CaseSense := false, &Out?, Limit := -1) {
-        return StrReplace(this, Pattern, Rep, CaseSense, &Out, Limit)
-    }
     Replace(Pattern, Rep := "", CaseSense := false, &Out?, Limit := -1) {
         return StrReplace(this, Pattern, Rep, CaseSense, &Out, Limit)
     }
@@ -875,9 +873,6 @@ class String {
      * @param   {Integer}         MaxParts    maximum number of substrings
      * @return  {Array}
      */
-    StrSplit(Delimiters := "", OmitChars?, MaxParts?) {
-        return StrSplit(this, Delimiters?, OmitChars?, MaxParts?)
-    }
     Split(Delimiters := "", OmitChars?, MaxParts?) {
         return StrSplit(this, Delimiters?, OmitChars?, MaxParts?)
     }
@@ -894,7 +889,7 @@ class String {
      * @param   {Integer?}    Occurrence   n-th occurrence to earch for
      * @return  {Integer}
      */
-    InStr(Pattern, CaseSense := false, StartingPos := 1, Occurrence := 1) {
+    Has(Pattern, CaseSense := false, StartingPos := 1, Occurrence := 1) {
         return InStr(this, Pattern, CaseSense, StartingPos, Occurrence)
     }
     Contains(Pattern, CaseSense := false, StartingPos := 1, Occurrence := 1) {
@@ -911,7 +906,7 @@ class String {
      * @param   {Integer?}  Length  length in characters
      * @return  {String}
      */
-    SubStr(Start, Length?) => SubStr(this, Start, Length?)
+    Sub(Start, Length?) => SubStr(this, Start, Length?)
 
     /**
      * Returns a substring at index `Start` and length `Length` in characters.
@@ -937,8 +932,8 @@ class String {
      * Returns the length of this string in characters.
      * @return  {Integer}
      */
-    StrLen() => StrLen(this)
-    Length   => StrLen(this)
+    Len() => StrLen(this)
+    Len   => StrLen(this)
 
     /**
      * Returns the length of this string in bytes with the specified encoding
@@ -973,7 +968,6 @@ class String {
      * @param   {Primitive?}  CaseSense  case-sensitivity of the comparison
      * @return  {Integer}
      */
-    StrCompare(Other, CaseSense := false) => StrCompare(this, Other, CaseSense)
     Compare(Other, CaseSense := false)    => StrCompare(this, Other, CaseSense)
 } ; class String
 } ; class AquaHotkey_String extends AquaHotkey
