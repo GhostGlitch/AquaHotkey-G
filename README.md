@@ -7,6 +7,7 @@ Decided to fork the project. for the readme, I gutted his/hers of most of it's c
 A fork of Aqua for use in my own AnimaHotkey project.
 Probably not going to be documenting this for a while if at all.
 Mostly just small tweaks to make it more ergonomic for me.
+
 If you want to use it, I'd recommend using the original over at [https://github.com/0w0Demonic/AquaHotkey](https://github.com/0w0Demonic/AquaHotkey) instead.
 
 ## About
