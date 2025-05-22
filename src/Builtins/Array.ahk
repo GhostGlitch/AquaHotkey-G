@@ -385,25 +385,25 @@ class Array {
 
     /**
      * Returns a new array containing all values in this array transformed
-     * by applying the given `Mapper` function.
+     * by applying the given `Mutator` function.
      * 
-     * `Mapper` is called using items in the array as first argument, followed
+     * `Mutator` is called using items in the array as first argument, followed
      * by zero or more additional arguments `Args*`.
      * 
-     * Unset elements are ignored, unless `Mapper` explicitly supports unset
+     * Unset elements are ignored, unless `Mutator` explicitly supports unset
      * parameters.
      * @example
      * 
-     * Array(1, 2, 3, 4).Map(x => x * 2)         ; [2, 4, 6, 8]
-     * Array("hello", "world").Map(SubStr, 1, 1) ; ["h", "w"]
+     * Array(1, 2, 3, 4).Mutate(x => x * 2)         ; [2, 4, 6, 8]
+     * Array("hello", "world").Mutate(SubStr, 1, 1) ; ["h", "w"]
      * 
-     * @param   {Func}  Mapper  function that returns a new element
+     * @param   {Func}  Mutator  function that returns a new element
      * @param   {Any*}  Args    zero or more additional arguments
      * @return  {Array}
      */
-    Map(Mapper, Args*) {
-        if (!HasMethod(Mapper)) {
-            throw TypeError("Expected a Function object",, Type(Mapper))
+    Mutate(Mutator, Args*) {
+        if (!HasMethod(Mutator)) {
+            throw TypeError("Expected a Function object",, Type(Mutator))
         }
         Result := Array()
         Result.Capacity := this.Length
@@ -411,15 +411,15 @@ class Array {
             Result.Default := this.Default
         }
 
-        if (HasMethod(Mapper,, 0)) {
+        if (HasMethod(Mutator,, 0)) {
             for Value in this {
-                Result.Push(Mapper(Value?, Args*))
+                Result.Push(Mutator(Value?, Args*))
             }
             return Result
         }
         for Value in this {
             if (IsSet(Value)) {
-                Result.Push(Mapper(Value, Args*))
+                Result.Push(Mutator(Value, Args*))
             } else {
                 ++Result.Length
             }
@@ -878,12 +878,12 @@ class Array {
      * @see `Array.Join()`
      * @example
      * 
-     * Array(1, 2, 3, 4).JoinLine() ; "1`n2`n3`n4"
+     * Array(1, 2, 3, 4).JoinLines() ; "1`n2`n3`n4"
      * 
      * @param   {Integer?}  InitialCap  initial string capacity
      * @return  {String}
      */
-    JoinLine(InitialCap := 0) => this.Join("`n", InitialCap)
+    JoinLines(InitialCap := 0) => this.Join("`n", InitialCap)
     
     /**
      * Performs a reduction on the elements of this array, using the given

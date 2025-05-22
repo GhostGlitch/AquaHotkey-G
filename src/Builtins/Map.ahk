@@ -168,22 +168,22 @@ class Map {
 
     /**
      * Returns a new map containing all current elements transformed by applying
-     * the given `Mapper` function to generate a new value.
+     * the given `Mutator` function to generate a new value.
      * 
-     * `Mapper` is called using key and value as first two arguments, followed
+     * `Mutator` is called using key and value as first two arguments, followed
      * by zero or more additional arguments `Args*`.
      * @example
      * 
      * ; Map { 1 => 4, 3 => 8 }
-     * Map(1, 2, 3, 4).Map((Key, Value) => (Value * 2))
+     * Map(1, 2, 3, 4).Mutate((Key, Value) => (Value * 2))
      * 
-     * @param   {Func}  Mapper  function that returns a new value
+     * @param   {Func}  Mutator  function that returns a new value
      * @param   {Any*}  Args    zero or more additional arguments
      * @return  {Map}
      */
-    Map(Mapper, Args*) {
-        if (!HasMethod(Mapper)) {
-            throw TypeError("Expected a Function object",, Type(Mapper))
+    Mutate(Mutator, Args*) {
+        if (!HasMethod(Mutator)) {
+            throw TypeError("Expected a Function object",, Type(Mutator))
         }
         Result := Map()
         Result.CaseSense := this.CaseSense
@@ -191,7 +191,7 @@ class Map {
             Result.Default := this.Default
         }
         for Key, Value in this {
-            Result[Key] := Mapper(Key, Value, Args*)
+            Result[Key] := Mutator(Key, Value, Args*)
         }
         return Result
     }

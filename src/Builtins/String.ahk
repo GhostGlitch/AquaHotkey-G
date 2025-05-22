@@ -15,7 +15,7 @@ class String {
      * @return  {Boolean}
      */
     IsDigit  => IsDigit(this)
-    IsHexit => IsXDigit(this)
+    IsHexit  => IsXDigit(this)
     IsAlpha  => IsAlpha(this)
     IsUpper  => IsUpper(this)
     IsLower  => IsLower(this)
@@ -889,7 +889,7 @@ class String {
      * @param   {Integer?}    Occurrence   n-th occurrence to earch for
      * @return  {Integer}
      */
-    Has(Pattern, CaseSense := false, StartingPos := 1, Occurrence := 1) {
+    InStr(Pattern, CaseSense := false, StartingPos := 1, Occurrence := 1) {
         return InStr(this, Pattern, CaseSense, StartingPos, Occurrence)
     }
     Contains(Pattern, CaseSense := false, StartingPos := 1, Occurrence := 1) {
@@ -932,8 +932,9 @@ class String {
      * Returns the length of this string in characters.
      * @return  {Integer}
      */
-    Len() => StrLen(this)
-    Len   => StrLen(this)
+    Len()  => StrLen(this)
+    Len    => StrLen(this)
+    Length => StrLen(this)
 
     /**
      * Returns the length of this string in bytes with the specified encoding
